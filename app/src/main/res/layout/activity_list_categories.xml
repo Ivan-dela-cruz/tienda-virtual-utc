@@ -24,13 +24,19 @@
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
                 android:src="@drawable/frutas" />
-
+            <LinearLayout
+                android:background="@color/colorBlack"
+                android:alpha="0.3"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:orientation="horizontal">
+            </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
 
                 android:orientation="horizontal">
-                <androidx.constraintlayout.widget.ConstraintLayout
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
@@ -38,6 +44,9 @@
                         android:id="@+id/list_categories_btn_back"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginStart="20dp"
                         android:layout_marginLeft="10dp"
                         android:layout_marginTop="10dp"
                         android:background="@android:color/transparent"
@@ -46,19 +55,25 @@
                         android:src="@drawable/ic_arrow_back_black_24dp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
+
                     <ImageButton
                         android:id="@+id/list_categories_btn_shop"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
-                        android:layout_marginRight="10dp"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentEnd="true"
                         android:layout_marginTop="10dp"
+                        android:layout_marginEnd="20dp"
+                        android:layout_marginRight="10dp"
                         android:background="@android:color/transparent"
                         android:clickable="true"
                         android:foreground="?android:attr/selectableItemBackground"
-                        android:src="@drawable/ic_shopping_cart_black_24dp"
+                        android:src="@drawable/ic_red_baseline_shopping_basket_24"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"/>
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                        app:layout_constraintTop_toTopOf="parent" />
+
+
+                </RelativeLayout>
 
 
             </LinearLayout>

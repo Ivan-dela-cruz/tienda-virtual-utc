@@ -162,6 +162,7 @@ public class SingInFragment extends Fragment {
                                 SharedPreferences.Editor editor = userPref.edit();
 
                                 editor.putString("token", object.getString("token"));
+                                editor.putInt("id", user.getInt("id"));
                                 editor.putString("name", user.getString("name"));
                                 editor.putString("username", user.getString("username"));
                                 editor.putString("email", user.getString("email"));

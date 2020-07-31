@@ -1,17 +1,25 @@
 package co.desofsi.tiendavirtual.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentManager;
 import co.desofsi.tiendavirtual.R;
 import co.desofsi.tiendavirtual.fragments.AccountFragment;
 import co.desofsi.tiendavirtual.fragments.HomeFragment;
 import co.desofsi.tiendavirtual.fragments.NotificationFragment;
 import co.desofsi.tiendavirtual.fragments.OrderFragment;
-import co.desofsi.tiendavirtual.fragments.TreatmentFragment;
+import co.desofsi.tiendavirtual.fragments.MapHomeFragment;
+import co.desofsi.tiendavirtual.maps.MapsActivity;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Typeface;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.etebarian.meowbottomnavigation.MeowBottomNavigation;
 
@@ -23,7 +31,8 @@ public class HomeActivity extends AppCompatActivity {
     private final static int ID_MESSAGE = 3;
     private final static int ID_NOTIFICATION = 4;
     private final static int ID_ACCOUNT = 5;
-
+    LocationManager localizar;
+    Location llocaliza;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +52,9 @@ public class HomeActivity extends AppCompatActivity {
         bottomNavigation.add(new MeowBottomNavigation.Model(ID_ACCOUNT, R.drawable.ic_account_circle_black_24dp));
 
         bottomNavigation.setCount(ID_NOTIFICATION, "115");
+
+        getPositionUser();
+
 
         bottomNavigation.setOnClickMenuListener(new MeowBottomNavigation.ClickListener() {
             @Override
@@ -70,7 +82,7 @@ public class HomeActivity extends AppCompatActivity {
                         break;
                     case ID_MESSAGE:
                         name = "MESSAGE";
-                        fragmentManager.beginTransaction().replace(R.id.home_frame_container,new TreatmentFragment(),TreatmentFragment.class.getSimpleName()).commit();
+                        fragmentManager.beginTransaction().replace(R.id.home_frame_container,new MapHomeFragment(), MapHomeFragment.class.getSimpleName()).commit();
 
                         break;
                     case ID_NOTIFICATION:
@@ -103,6 +115,24 @@ public class HomeActivity extends AppCompatActivity {
 
 
 
+
+    }
+    public void getPositionUser() {
+
+        ActivityCompat.requestPermissions(HomeActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        if (ActivityCompat.checkSelfPermission(HomeActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            Toast.makeText(HomeActivity.this, "no hay permiso", Toast.LENGTH_LONG).show();
+        else {
+            localizar = (LocationManager) HomeActivity.this.getSystemService(Context.LOCATION_SERVICE);
+            llocaliza = localizar.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            if (llocaliza != null) {
+                //  txt_lon.setText(String.valueOf(llocaliza.getLongitude()));
+                // txt_lati.setText(String.valueOf(llocaliza.getLatitude()));
+                //Toast.makeText(MapsActivity.this, " ubicacion  " + llocaliza.getLatitude() + " , " + llocaliza.getLongitude(), Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(HomeActivity.this, "no hay ubicacion", Toast.LENGTH_LONG).show();
+            }
+        }
 
     }
 }

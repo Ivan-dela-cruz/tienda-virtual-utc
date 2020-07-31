@@ -5,9 +5,11 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import co.desofsi.tiendavirtual.R;
 import co.desofsi.tiendavirtual.adapters.ListCompanyAdapter;
 import co.desofsi.tiendavirtual.data.Constant;
+import co.desofsi.tiendavirtual.maps.MapsActivity;
 import co.desofsi.tiendavirtual.models.Company;
 import co.desofsi.tiendavirtual.models.TypeCompany;
 
@@ -19,6 +21,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -47,7 +50,7 @@ public class ListComapiesActivity extends AppCompatActivity {
     private ArrayList<Company> lis_companies;
     private SwipeRefreshLayout refreshLayout;
     private SharedPreferences sharedPreferences;
-    private ImageButton btn_back;
+    private ImageButton btn_back, btn_map;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +66,7 @@ public class ListComapiesActivity extends AppCompatActivity {
         text_descrip = findViewById(R.id.list_companies_text_description);
         list_companies_text_baner = findViewById(R.id.list_companies_text_baner);
         btn_back = findViewById(R.id.list_companies_btn_back);
+        btn_map = findViewById(R.id.list_companies_btn_map);
 
         Picasso.get().load(Constant.URL + typeCompany_selected.getUrl_image()).into(imageView);
         list_companies_text_baner.setText(typeCompany_selected.getName());
@@ -91,6 +95,14 @@ public class ListComapiesActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 onBackPressed();
+            }
+        });
+        btn_map.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(ListComapiesActivity.this, MapsActivity.class);
+                intent.putExtra("type_company_selected", typeCompany_selected);
+                startActivity(intent);
             }
         });
     }

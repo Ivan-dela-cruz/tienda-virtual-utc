@@ -13,12 +13,17 @@ import co.desofsi.tiendavirtual.adapters.RecyclerCategoriesAdapter;
 import co.desofsi.tiendavirtual.data.Constant;
 import co.desofsi.tiendavirtual.models.Category;
 import co.desofsi.tiendavirtual.models.Company;
+import co.desofsi.tiendavirtual.models.DateClass;
+import co.desofsi.tiendavirtual.models.DetailOrder;
+import co.desofsi.tiendavirtual.models.Order;
 import co.desofsi.tiendavirtual.models.Product;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -39,6 +44,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,26 +64,46 @@ public class ListCategoriesActivity extends AppCompatActivity {
     public static Product produc_category;
     public static RecyclerView recyclerView_list_products;
     public static SwipeRefreshLayout refreshLayout;
+    public static Order order;
+    public static DetailOrder detailOrder ;
+    public static ArrayList<DetailOrder> list_detail;
+    ///fechas
+    private DateClass dateClass;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_categories);
+        super.onResume();
         init();
     }
 
     private void init() {
+        dateClass = new DateClass();
+        order = new Order();
+        detailOrder =  new DetailOrder();
         company = (Company) getIntent().getExtras().getSerializable("company_selected");
+
+        sharedPreferences = ListCategoriesActivity.this.getApplicationContext().getSharedPreferences("user", Context.MODE_PRIVATE);
+        int id_user = sharedPreferences.getInt("id", 0);
+        String name = sharedPreferences.getString("name","");
+        order.setId_user(id_user);
+        order.setId_company(company.getId());
+        order.setName_company(company.getCompany_name());
+        order.setName_customer(name);
+        order.setDate(dateClass.dateToday());
+        order.setDate_format(dateClass.dateTodayFormatServer());
+
+
         lis_categories = new ArrayList<>();
+        list_detail = new ArrayList<>();
+
         image_baner = findViewById(R.id.list_categories_image_baner);
         text_baner_name = findViewById(R.id.list_categories_text_baner);
         text_baner_des = findViewById(R.id.list_categories_text_description);
         btn_back = findViewById(R.id.list_categories_btn_back);
         btn_shop = findViewById(R.id.list_categories_btn_shop);
-
-
-        sharedPreferences = ListCategoriesActivity.this.getApplicationContext().getSharedPreferences("user", Context.MODE_PRIVATE);
-        recyclerView_list_categories = findViewById(R.id.list_categories_lista_recycler);
+          recyclerView_list_categories = findViewById(R.id.list_categories_lista_recycler);
         //recyclerView_list_categories.setHasFixedSize(true);
         //LinearLayoutManager mLayoutManager = new GridLayoutManager(ListCategoriesActivity.this, 2);
         LinearLayoutManager horizontalLayoutManagaer = new LinearLayoutManager(ListCategoriesActivity.this, LinearLayoutManager.HORIZONTAL, false);
@@ -98,6 +124,8 @@ public class ListCategoriesActivity extends AppCompatActivity {
         Picasso.get().load(Constant.URL + company.getUrl_merchant()).into(image_baner);
         text_baner_name.setText(company.getCompany_name());
         text_baner_des.setText(company.getCompany_description());
+
+
         ///CARGAR CATEGORIAS
         getCompanies();
 
@@ -105,6 +133,12 @@ public class ListCategoriesActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 onBackPressed();
+            }
+        });
+        btn_shop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(ListCategoriesActivity.this,DetailOrderActivity.class));
             }
         });
 

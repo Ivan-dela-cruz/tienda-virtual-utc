@@ -8,4 +8,7 @@
     <color name="colorGrey">#666666</color>
     <color name="colorLightGrey">#999999</color>
     <color name="colorRed">#f44336</color>
+    <color name="colorOrange">#EDF48C0D</color>
+    <color name="colorSeparator">#D8D4D4</color>
+    <color name="colorPrimaryOrange">#FF5722</color>
 </resources>

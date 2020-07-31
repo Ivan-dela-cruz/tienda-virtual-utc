@@ -7,6 +7,7 @@
     android:orientation="vertical">
 
     <ScrollView
+        android:fillViewport="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -46,7 +47,7 @@
 
                         <LinearLayout
                             android:layout_width="296dp"
-                            android:layout_height="300.3dp"
+                            android:layout_height="500.3dp"
                             android:layout_marginBottom="35dp"
                             android:background="@drawable/white_rounded_corner"
                             android:orientation="vertical"
@@ -65,6 +66,51 @@
                                 android:textSize="20.3sp" />
 
 
+
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:id="@+id/text_name_layout_sing_up"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="6dp">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/text_name_sing_up"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="Nombres"
+                                    android:inputType="textPersonName"
+                                    android:textSize="15sp" />
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:id="@+id/text_last_name_layout_sing_up"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="6dp">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/text_last_name_sing_up"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="Apellidos"
+                                    android:inputType="textPersonName"
+                                    android:textSize="15sp" />
+                            </com.google.android.material.textfield.TextInputLayout>
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:id="@+id/text_user_layout_sing_up"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="6dp">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/text_user_sing_up"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="Usuario"
+                                    android:inputType="textPersonName"
+                                    android:textSize="15sp" />
+                            </com.google.android.material.textfield.TextInputLayout>
                             <com.google.android.material.textfield.TextInputLayout
                                 android:id="@+id/text_email_layout_sing_up"
                                 android:layout_width="match_parent"
@@ -79,7 +125,20 @@
                                     android:inputType="textEmailAddress"
                                     android:textSize="15sp" />
                             </com.google.android.material.textfield.TextInputLayout>
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:id="@+id/text_phone_layout_sing_up"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="6dp">
 
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/text_phone_sing_up"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="Móvil"
+                                    android:inputType="text|phone"
+                                    android:textSize="15sp" />
+                            </com.google.android.material.textfield.TextInputLayout>
 
                             <com.google.android.material.textfield.TextInputLayout
                                 android:id="@+id/text_password_layout_sing_up"

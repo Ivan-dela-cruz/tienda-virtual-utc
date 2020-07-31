@@ -40,8 +40,8 @@ import co.desofsi.tiendavirtual.init.AuthActivity;
 
 public class SingUpFragment extends Fragment {
     private View view;
-    private TextInputLayout layout_email, layout_password,layout_cofirm_pass;
-    private TextInputEditText txt_email, txt_password,txt_confirm_pass;
+    private TextInputLayout layout_email, layout_password,layout_cofirm_pass,ly_user,ly_name,ly_last,ly_movil;
+    private TextInputEditText txt_email, txt_password,txt_confirm_pass,txt_user,txt_name,txt_last_name,txt_movil;;
     private Button btn_sin_in;
     private TextView txt_sing_in;
     private ProgressDialog dialog;
@@ -62,9 +62,21 @@ public class SingUpFragment extends Fragment {
         layout_email = view.findViewById(R.id.text_email_layout_sing_up);
         layout_password = view.findViewById(R.id.text_password_layout_sing_up);
         layout_cofirm_pass = view.findViewById(R.id.text_confirm_password_layout_sing_up);
+        ly_user = view.findViewById(R.id.text_user_layout_sing_up);
+        ly_name = view.findViewById(R.id.text_name_layout_sing_up);
+        ly_last = view.findViewById(R.id.text_last_name_layout_sing_up);
+        ly_movil = view.findViewById(R.id.text_phone_layout_sing_up);
         txt_email = view.findViewById(R.id.text_email_sing_up);
         txt_password = view.findViewById(R.id.text_password_sing_up);
         txt_confirm_pass =  view.findViewById(R.id.text_confirm_password_sing_up);
+        txt_user = view.findViewById(R.id.text_user_sing_up);
+        txt_name = view.findViewById(R.id.text_name_sing_up);
+        txt_last_name = view.findViewById(R.id.text_last_name_sing_up);
+        txt_movil = view.findViewById(R.id.text_phone_sing_up);
+
+
+
+
         btn_sin_in = view.findViewById(R.id.btn_sing_up);
         txt_sing_in = view.findViewById(R.id.text_sing_up);
         dialog =  new ProgressDialog(getContext());
@@ -171,6 +183,10 @@ public class SingUpFragment extends Fragment {
         dialog.show();
         final String email = txt_email.getText().toString().trim();
         final String password = txt_password.getText().toString().trim();
+        final String name = txt_name.getText().toString().trim();
+        final String user = txt_user.getText().toString().trim();
+        final String phone = txt_movil.getText().toString().trim();
+        final String last_name = txt_last_name.getText().toString().trim();
 
         System.out.println(Constant.REGISTER);
         StringRequest stringRequest = new StringRequest(Request.Method.POST, Constant.REGISTER,
@@ -216,6 +232,10 @@ public class SingUpFragment extends Fragment {
                 Map<String,String> map = new HashMap<String,String>();
                 map.put("email",email);
                 map.put("password",password);
+                map.put("name",name);
+                map.put("last_name",last_name);
+                map.put("username",user);
+                map.put("phone",phone);
                 return map;
             }
         };
