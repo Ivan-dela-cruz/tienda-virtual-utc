@@ -1,13 +1,21 @@
 package co.desofsi.tiendavirtual.activities;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -49,15 +57,28 @@ public class DetailOrderActivity extends AppCompatActivity {
     public static RelativeLayout relative_empty;
     private ProgressDialog dialog;
     private SharedPreferences userPref;
+    private TextView txt_per;
 
+    LocationManager locationManager;
+    Location location;
+
+    private static final int PERMISSION_LOCATION = 1;
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_order);
-        init();
-        loadDetail();
+        try{
+            init();
+            loadDetail();
+            getPositionUser();
+            eventsButtons();
+        }catch (Exception e)
+        {
+            Toast.makeText(DetailOrderActivity.this,"Error : "+e,Toast.LENGTH_SHORT).show();
+        }
 
-        eventsButtons();
     }
 
     public void init() {
@@ -68,6 +89,7 @@ public class DetailOrderActivity extends AppCompatActivity {
         btn_back = findViewById(R.id.detail_order_btn_back);
         liner_btn = findViewById(R.id.detail_bottom);
         relative_empty = findViewById(R.id.empty_concept);
+        txt_per = findViewById(R.id.detail_order_txt_permi);
         dialog = new ProgressDialog(DetailOrderActivity.this);
         dialog.setCancelable(false);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(DetailOrderActivity.this, LinearLayoutManager.VERTICAL, false);
@@ -87,9 +109,11 @@ public class DetailOrderActivity extends AppCompatActivity {
     private void postOrder() {
         dialog.setMessage("Enviando");
         dialog.show();
-       // final String id_user = String.valueOf(ListCategoriesActivity.order.getId_user());
+        // final String id_user = String.valueOf(ListCategoriesActivity.order.getId_user());
         final String id_company = String.valueOf(ListCategoriesActivity.order.getId_company());
         final String total_order = ListCategoriesActivity.order.getTotal();
+        final String longitude_order = ListCategoriesActivity.order.getLongitude_order();
+        final String latitude_order = ListCategoriesActivity.order.getLatitude_order();
 
         final JSONArray array = new JSONArray();
         int i = 0;
@@ -148,11 +172,14 @@ public class DetailOrderActivity extends AppCompatActivity {
                 map.put("Authorization", "Bearer " + token);
                 return map;
             }
+
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> map = new HashMap<String, String>();
                 map.put("id_company", id_company);
                 map.put("total_order", total_order);
+                map.put("longitude",longitude_order);
+                map.put("latitude",latitude_order);
                 map.put("detail_order", array.toString());
                 return map;
             }
@@ -195,9 +222,63 @@ public class DetailOrderActivity extends AppCompatActivity {
         btn_confirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                postOrder();
+
+                if(ListCategoriesActivity.order.getLatitude_order() !=null && ListCategoriesActivity.order.getLongitude_order() !=null)
+
+                {
+                    postOrder();
+                }else{
+                    Toast.makeText(DetailOrderActivity.this, "Tu ubicación no ha sido encontrada, revisa tu dispositivo", Toast.LENGTH_LONG).show();
+                }
                 // startActivity(new Intent(DetailOrderActivity.this, ReviewOrderActivity.class));
             }
         });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public void getPositionUser() {
+
+       // ActivityCompat.requestPermissions(DetailOrderActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        if (ActivityCompat.checkSelfPermission(DetailOrderActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED) {
+            String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION};
+            requestPermissions(permissions, PERMISSION_LOCATION);
+        }
+
+        else {
+            locationManager = (LocationManager) DetailOrderActivity.this.getSystemService(Context.LOCATION_SERVICE);
+            location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            if (location != null) {
+                //  txt_lon.setText(String.valueOf(llocaliza.getLongitude()));
+                // txt_lati.setText(String.valueOf(llocaliza.getLatitude()));
+                String longitude_order = String.valueOf(location.getLongitude());
+                String latitude_order = String.valueOf(location.getLatitude());
+                ListCategoriesActivity.order.setLatitude_order(latitude_order);
+                ListCategoriesActivity.order.setLongitude_order(longitude_order);
+                btn_confirm.setVisibility(View.VISIBLE);
+                txt_per.setVisibility(View.GONE);
+               // Toast.makeText(DetailOrderActivity.this, " ubicacion  " + location.getLatitude() + " , " + location.getLongitude(), Toast.LENGTH_LONG).show();
+            } else {
+                btn_confirm.setVisibility(View.GONE);
+                txt_per.setVisibility(View.VISIBLE);
+                Toast.makeText(DetailOrderActivity.this, "Tu ubicación no ha sido encontrada", Toast.LENGTH_LONG).show();
+            }
+        }
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSION_LOCATION: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    getPositionUser();
+                } else {
+                    Toast.makeText(DetailOrderActivity.this, "Habilite el permiso de ubicación", Toast.LENGTH_LONG).show();
+
+                }
+            }
+        }
     }
 }

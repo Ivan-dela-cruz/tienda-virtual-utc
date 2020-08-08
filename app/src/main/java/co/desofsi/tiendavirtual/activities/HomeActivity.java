@@ -8,8 +8,7 @@ import co.desofsi.tiendavirtual.fragments.AccountFragment;
 import co.desofsi.tiendavirtual.fragments.HomeFragment;
 import co.desofsi.tiendavirtual.fragments.NotificationFragment;
 import co.desofsi.tiendavirtual.fragments.OrderFragment;
-import co.desofsi.tiendavirtual.fragments.MapHomeFragment;
-import co.desofsi.tiendavirtual.maps.MapsActivity;
+import co.desofsi.tiendavirtual.fragments.MerchantHomeFragment;
 
 import android.Manifest;
 import android.content.Context;
@@ -46,8 +45,8 @@ public class HomeActivity extends AppCompatActivity {
         MeowBottomNavigation bottomNavigation = findViewById(R.id.bottomNavigation);
 
         bottomNavigation.add(new MeowBottomNavigation.Model(ID_HOME, R.drawable.ic_home_black_24dp));
-        bottomNavigation.add(new MeowBottomNavigation.Model(ID_EXPLORE, R.drawable.ic_calendar));
-        bottomNavigation.add(new MeowBottomNavigation.Model(ID_MESSAGE, R.drawable.ic_check_file));
+        bottomNavigation.add(new MeowBottomNavigation.Model(ID_EXPLORE, R.drawable.ic_baseline_shopping_cart_24));
+        bottomNavigation.add(new MeowBottomNavigation.Model(ID_MESSAGE, R.drawable.ic_baseline_directions_bike_24));
         bottomNavigation.add(new MeowBottomNavigation.Model(ID_NOTIFICATION, R.drawable.ic_notifications_black_24dp));
         bottomNavigation.add(new MeowBottomNavigation.Model(ID_ACCOUNT, R.drawable.ic_account_circle_black_24dp));
 
@@ -82,7 +81,7 @@ public class HomeActivity extends AppCompatActivity {
                         break;
                     case ID_MESSAGE:
                         name = "MESSAGE";
-                        fragmentManager.beginTransaction().replace(R.id.home_frame_container,new MapHomeFragment(), MapHomeFragment.class.getSimpleName()).commit();
+                        fragmentManager.beginTransaction().replace(R.id.home_frame_container,new MerchantHomeFragment(), MerchantHomeFragment.class.getSimpleName()).commit();
 
                         break;
                     case ID_NOTIFICATION:
@@ -111,7 +110,7 @@ public class HomeActivity extends AppCompatActivity {
 
         bottomNavigation.setCount(ID_NOTIFICATION, "115");
 
-        bottomNavigation.show(ID_NOTIFICATION,true);
+        bottomNavigation.show(ID_HOME,true);
 
 
 
@@ -130,7 +129,7 @@ public class HomeActivity extends AppCompatActivity {
                 // txt_lati.setText(String.valueOf(llocaliza.getLatitude()));
                 //Toast.makeText(MapsActivity.this, " ubicacion  " + llocaliza.getLatitude() + " , " + llocaliza.getLongitude(), Toast.LENGTH_LONG).show();
             } else {
-                Toast.makeText(HomeActivity.this, "no hay ubicacion", Toast.LENGTH_LONG).show();
+                Toast.makeText(HomeActivity.this, "no se obtuvo tu ubicación", Toast.LENGTH_LONG).show();
             }
         }
 

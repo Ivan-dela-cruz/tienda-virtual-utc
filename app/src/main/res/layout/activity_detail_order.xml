@@ -166,6 +166,20 @@
                 android:textAllCaps="false"
                 android:textColor="@color/colorWhite" />
 
+            <TextView
+                android:id="@+id/detail_order_txt_permi"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="5dp"
+                android:fontFamily="@font/opensans_regular"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:text="Por favor enciende la ubicación o habilita el permiso de ubicacíón para esta aplicación en ajustes, la ubicación es esencial para la entrega de tu pedido."
+                android:textColor="@color/colorRed"
+                android:textSize="9sp" />
+
         </RelativeLayout>
     </LinearLayout>
 

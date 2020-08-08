@@ -16,6 +16,14 @@ public class DateClass {
         this.calendar = Calendar.getInstance();
     }
 
+    public String time(String timestamp){
+        try{
+            return timestamp.substring(10, 16)+",  ";
+        }catch (Exception e){
+            return "";
+        }
+    }
+
     public String dateToday() {
         dia = calendar.get(Calendar.DAY_OF_MONTH);
         mes = calendar.get(Calendar.MONTH) + 1;

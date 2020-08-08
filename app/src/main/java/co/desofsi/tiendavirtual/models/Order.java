@@ -5,10 +5,50 @@ import java.util.ArrayList;
 
 public class Order implements Serializable {
     private int id, id_customer,id_user,id_company;
-    private String date, total, status, order_number,name_company,name_customer,date_format;
+    private String date, total, status, order_number,name_company,name_customer,date_format,url_order,longitude_company,latitude_company,longitude_order,latitude_order;
     private ArrayList<DetailOrder> list_detail;
 
     public Order() {
+    }
+
+    public String getLongitude_company() {
+        return longitude_company;
+    }
+
+    public void setLongitude_company(String longitude_company) {
+        this.longitude_company = longitude_company;
+    }
+
+    public String getLatitude_company() {
+        return latitude_company;
+    }
+
+    public void setLatitude_company(String latitude_company) {
+        this.latitude_company = latitude_company;
+    }
+
+    public String getLongitude_order() {
+        return longitude_order;
+    }
+
+    public void setLongitude_order(String longitude_order) {
+        this.longitude_order = longitude_order;
+    }
+
+    public String getLatitude_order() {
+        return latitude_order;
+    }
+
+    public void setLatitude_order(String latitude_order) {
+        this.latitude_order = latitude_order;
+    }
+
+    public String getUrl_order() {
+        return url_order;
+    }
+
+    public void setUrl_order(String url_order) {
+        this.url_order = url_order;
     }
 
     public String getDate_format() {
