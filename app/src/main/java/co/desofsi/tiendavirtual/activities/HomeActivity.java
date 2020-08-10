@@ -6,7 +6,7 @@ import androidx.fragment.app.FragmentManager;
 import co.desofsi.tiendavirtual.R;
 import co.desofsi.tiendavirtual.fragments.AccountFragment;
 import co.desofsi.tiendavirtual.fragments.HomeFragment;
-import co.desofsi.tiendavirtual.fragments.NotificationFragment;
+import co.desofsi.tiendavirtual.fragments.RequestDeliveryFragment;
 import co.desofsi.tiendavirtual.fragments.OrderFragment;
 import co.desofsi.tiendavirtual.fragments.MerchantHomeFragment;
 
@@ -86,7 +86,7 @@ public class HomeActivity extends AppCompatActivity {
                         break;
                     case ID_NOTIFICATION:
                         name = "NOTIFICATION";
-                        fragmentManager.beginTransaction().replace(R.id.home_frame_container,new NotificationFragment(),NotificationFragment.class.getSimpleName()).commit();
+                        fragmentManager.beginTransaction().replace(R.id.home_frame_container,new RequestDeliveryFragment(), RequestDeliveryFragment.class.getSimpleName()).commit();
 
                         break;
                     case ID_ACCOUNT:

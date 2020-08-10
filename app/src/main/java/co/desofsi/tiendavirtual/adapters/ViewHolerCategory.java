@@ -9,7 +9,7 @@ import com.squareup.picasso.Picasso;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 import co.desofsi.tiendavirtual.R;
-import co.desofsi.tiendavirtual.data.Constant;
+import co.desofsi.tiendavirtual.routes.Routes;
 
 
 public class ViewHolerCategory extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -36,7 +36,7 @@ public class ViewHolerCategory extends RecyclerView.ViewHolder implements View.O
         txt_name.setText(valor);
     }
     public void setImageView_specialty(String valor) {
-        Picasso.get().load(Constant.URL + valor).into(imageView_specialty);
+        Picasso.get().load(Routes.URL + valor).into(imageView_specialty);
 
     }
 

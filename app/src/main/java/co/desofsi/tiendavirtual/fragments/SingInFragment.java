@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,7 +34,7 @@ import androidx.fragment.app.Fragment;
 
 import co.desofsi.tiendavirtual.R;
 import co.desofsi.tiendavirtual.activities.HomeActivity;
-import co.desofsi.tiendavirtual.data.Constant;
+import co.desofsi.tiendavirtual.routes.Routes;
 import co.desofsi.tiendavirtual.init.AuthActivity;
 
 public class SingInFragment extends Fragment {
@@ -149,8 +148,8 @@ public class SingInFragment extends Fragment {
         dialog.show();
         final String email = txt_email.getText().toString().trim();
         final String password = txt_password.getText().toString().trim();
-        System.out.println(Constant.LOGIN);
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constant.LOGIN,
+        System.out.println(Routes.LOGIN);
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, Routes.LOGIN,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {

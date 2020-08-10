@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.Manifest;
 import android.app.DownloadManager;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -39,9 +38,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import co.desofsi.tiendavirtual.R;
-import co.desofsi.tiendavirtual.adapters.OrderListAdapter;
 import co.desofsi.tiendavirtual.adapters.ReviewListProductstAdapter;
-import co.desofsi.tiendavirtual.data.Constant;
+import co.desofsi.tiendavirtual.routes.Routes;
 import co.desofsi.tiendavirtual.models.DateClass;
 import co.desofsi.tiendavirtual.models.DetailOrder;
 import co.desofsi.tiendavirtual.models.Order;
@@ -140,7 +138,7 @@ public class ShowOrderDetailActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void downloadPdf() {
-        String url = Constant.URL + order.getUrl_order();
+        String url = Routes.URL + order.getUrl_order();
         System.out.println(url);
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
         String tempTitle = order.getOrder_number();
@@ -169,7 +167,7 @@ public class ShowOrderDetailActivity extends AppCompatActivity {
     }
 
     public void startDownLoad() {
-        String url = Constant.URL + order.getUrl_order();
+        String url = Routes.URL + order.getUrl_order();
         String tempTitle = order.getOrder_number();
         System.out.println(url);
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
@@ -210,7 +208,7 @@ public class ShowOrderDetailActivity extends AppCompatActivity {
 
     private void getOrdersDetail() {
         lis_products = new ArrayList<>();
-        String url = Constant.ORDER_DETAIL + "/" + order.getId();
+        String url = Routes.ORDER_DETAIL + "/" + order.getId();
         System.out.println(url);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {

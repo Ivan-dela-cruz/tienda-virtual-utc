@@ -32,9 +32,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import co.desofsi.tiendavirtual.R;
-import co.desofsi.tiendavirtual.adapters.OrderListAdapter;
 import co.desofsi.tiendavirtual.adaptersmerchant.OrderListMerchantAdapter;
-import co.desofsi.tiendavirtual.data.Constant;
+import co.desofsi.tiendavirtual.routes.Routes;
 import co.desofsi.tiendavirtual.models.Order;
 
 
@@ -78,8 +77,8 @@ public class MerchantHomeFragment extends Fragment {
     private void getOrders() {
         lis_orders = new ArrayList<>();
         refreshLayout.setRefreshing(true);
-        System.out.println(Constant.LOGIN);
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, Constant.ORDERS,
+        System.out.println(Routes.LOGIN);
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, Routes.ORDERS,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {

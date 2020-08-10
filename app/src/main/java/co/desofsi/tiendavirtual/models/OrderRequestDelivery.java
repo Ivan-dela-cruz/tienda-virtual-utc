@@ -3,9 +3,33 @@ package co.desofsi.tiendavirtual.models;
 import java.io.Serializable;
 
 public class OrderRequestDelivery implements Serializable {
-    private int id, id_delivery,id_company;
+    private int id, id_delivery,id_company,id_order;
     private  String datetime, date,total, status, order_number,name_company,name_customer,url_order,url_request;
-    private String longitude_company,latitude_company,longitude_order,latitude_order,total_request;
+    private String longitude_company,latitude_company,longitude_order,latitude_order,total_request,status_request,company_address;
+
+    public String getCompany_address() {
+        return company_address;
+    }
+
+    public void setCompany_address(String company_address) {
+        this.company_address = company_address;
+    }
+
+    public String getStatus_request() {
+        return status_request;
+    }
+
+    public void setStatus_request(String status_request) {
+        this.status_request = status_request;
+    }
+
+    public int getId_order() {
+        return id_order;
+    }
+
+    public void setId_order(int id_order) {
+        this.id_order = id_order;
+    }
 
     public int getId() {
         return id;

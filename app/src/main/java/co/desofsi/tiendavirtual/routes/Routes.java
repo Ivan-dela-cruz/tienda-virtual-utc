@@ -1,6 +1,6 @@
-package co.desofsi.tiendavirtual.data;
+package co.desofsi.tiendavirtual.routes;
 
-public class Constant {
+public class Routes {
 
     public static final String URL = "http://192.168.0.105:8000/";
     //public static  final String URL = "https://www.tiendavirtualutc.xyz/";
@@ -23,5 +23,6 @@ public class Constant {
 
     //RUTA PARA LOS REPARTIDORES
     public static final String DELIVERYMAN = HOME + "/api-deliveriman";
-
+    public static final String SEND_REQUEST_DELIVERY = HOME + "/api-send-request-delivery";
+    public static final String GET_REQUEST_DELIVERY = HOME + "/api-get-request-delivery";
 }

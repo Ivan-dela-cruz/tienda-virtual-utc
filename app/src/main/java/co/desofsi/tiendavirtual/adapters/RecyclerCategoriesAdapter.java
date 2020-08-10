@@ -4,21 +4,14 @@ package co.desofsi.tiendavirtual.adapters;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
-
-import com.android.volley.Response;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 import co.desofsi.tiendavirtual.R;
 
-import co.desofsi.tiendavirtual.data.Constant;
 import co.desofsi.tiendavirtual.models.Category;
 
 

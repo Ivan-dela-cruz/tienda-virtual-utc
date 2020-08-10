@@ -8,9 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.android.volley.Response;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -21,9 +19,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import co.desofsi.tiendavirtual.R;
 import co.desofsi.tiendavirtual.activities.HomeActivity;
 import co.desofsi.tiendavirtual.activities.ListComapiesActivity;
-import co.desofsi.tiendavirtual.data.Constant;
+import co.desofsi.tiendavirtual.routes.Routes;
 import co.desofsi.tiendavirtual.models.TypeCompany;
-import de.hdodenhof.circleimageview.CircleImageView;
 
 public class TypeCompanyAdapter extends RecyclerView.Adapter<TypeCompanyAdapter.TypeCompanyHolder> {
 
@@ -49,8 +46,8 @@ public class TypeCompanyAdapter extends RecyclerView.Adapter<TypeCompanyAdapter.
 
         final TypeCompany company = list.get(position);
         // Picasso.get().load(Constant.URL+"img/users/"+specialty.getDoctor().getUrl_image()).into(holder.image_doctor);
-        System.out.println(Constant.URL + company.getUrl_image());
-        Picasso.get().load(Constant.URL + company.getUrl_image()).into(holder.imageView_specialty);
+        System.out.println(Routes.URL + company.getUrl_image());
+        Picasso.get().load(Routes.URL + company.getUrl_image()).into(holder.imageView_specialty);
 
         holder.txt_name_specialty.setText(company.getName());
         holder.btn_options.setOnClickListener(new View.OnClickListener() {

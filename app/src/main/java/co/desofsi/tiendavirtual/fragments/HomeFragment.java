@@ -1,7 +1,6 @@
 package co.desofsi.tiendavirtual.fragments;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -33,10 +32,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import co.desofsi.tiendavirtual.R;
-import co.desofsi.tiendavirtual.activities.CompanyActivity;
 import co.desofsi.tiendavirtual.activities.HomeActivity;
 import co.desofsi.tiendavirtual.adapters.TypeCompanyAdapter;
-import co.desofsi.tiendavirtual.data.Constant;
+import co.desofsi.tiendavirtual.routes.Routes;
 import co.desofsi.tiendavirtual.models.TypeCompany;
 
 public class HomeFragment extends Fragment  {
@@ -87,8 +85,8 @@ public class HomeFragment extends Fragment  {
     private void getSpecialties() {
         lis_companies = new ArrayList<>();
         refreshLayout.setRefreshing(true);
-        System.out.println(Constant.LOGIN);
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, Constant.TYPE_COMPANES,
+        System.out.println(Routes.LOGIN);
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, Routes.TYPE_COMPANES,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {

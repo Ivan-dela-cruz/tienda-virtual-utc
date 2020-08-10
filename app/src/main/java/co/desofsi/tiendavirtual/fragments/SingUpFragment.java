@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,7 +33,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import co.desofsi.tiendavirtual.R;
 import co.desofsi.tiendavirtual.activities.HomeActivity;
-import co.desofsi.tiendavirtual.data.Constant;
+import co.desofsi.tiendavirtual.routes.Routes;
 import co.desofsi.tiendavirtual.init.AuthActivity;
 
 
@@ -188,8 +187,8 @@ public class SingUpFragment extends Fragment {
         final String phone = txt_movil.getText().toString().trim();
         final String last_name = txt_last_name.getText().toString().trim();
 
-        System.out.println(Constant.REGISTER);
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constant.REGISTER,
+        System.out.println(Routes.REGISTER);
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, Routes.REGISTER,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {

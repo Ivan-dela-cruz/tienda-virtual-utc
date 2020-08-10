@@ -1,16 +1,13 @@
 package co.desofsi.tiendavirtual.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import co.desofsi.tiendavirtual.R;
 import co.desofsi.tiendavirtual.adapters.ListCategoriesAdapter;
-import co.desofsi.tiendavirtual.adapters.ListCompanyAdapter;
 import co.desofsi.tiendavirtual.adapters.ListProductstAdapter;
-import co.desofsi.tiendavirtual.adapters.RecyclerCategoriesAdapter;
-import co.desofsi.tiendavirtual.data.Constant;
+import co.desofsi.tiendavirtual.routes.Routes;
 import co.desofsi.tiendavirtual.models.Category;
 import co.desofsi.tiendavirtual.models.Company;
 import co.desofsi.tiendavirtual.models.DateClass;
@@ -23,18 +20,14 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
-import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
@@ -44,7 +37,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -121,7 +113,7 @@ public class ListCategoriesActivity extends AppCompatActivity {
 
 
         ///COMPONENTES DEL ACTIVITY
-        Picasso.get().load(Constant.URL + company.getUrl_merchant()).into(image_baner);
+        Picasso.get().load(Routes.URL + company.getUrl_merchant()).into(image_baner);
         text_baner_name.setText(company.getCompany_name());
         text_baner_des.setText(company.getCompany_description());
 
@@ -146,7 +138,7 @@ public class ListCategoriesActivity extends AppCompatActivity {
 
     public void getCompanies() {
         lis_categories = new ArrayList<>();
-        String url = Constant.CATEGORIES + "/" + company.getId();
+        String url = Routes.CATEGORIES + "/" + company.getId();
         System.out.println(url);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
@@ -210,7 +202,7 @@ public class ListCategoriesActivity extends AppCompatActivity {
     public void getProducts(Category category) {
         list_products = new ArrayList<>();
         refreshLayout.setRefreshing(true);
-        String url = Constant.PRODUCTS + "/" + category.getId();
+        String url = Routes.PRODUCTS + "/" + category.getId();
         // System.out.println(url);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {

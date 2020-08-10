@@ -3,12 +3,11 @@ package co.desofsi.tiendavirtual.activities;
 import androidx.appcompat.app.AppCompatActivity;
 
 import co.desofsi.tiendavirtual.R;
-import co.desofsi.tiendavirtual.data.Constant;
+import co.desofsi.tiendavirtual.routes.Routes;
 import co.desofsi.tiendavirtual.models.Category;
 import co.desofsi.tiendavirtual.models.DetailOrder;
 import co.desofsi.tiendavirtual.models.Product;
 
-import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -59,7 +58,7 @@ public class ShowProductActivity extends AppCompatActivity {
 
         //RENDERIZAR LOS DATOS
 
-        Picasso.get().load(Constant.URL + product.getUrl_image()).into(imageView_product);
+        Picasso.get().load(Routes.URL + product.getUrl_image()).into(imageView_product);
         text_name.setText(product.getName());
         text_description.setText(product.getDescription());
         text_price.setText("$ " + product.getSale_price());

@@ -1,9 +1,5 @@
 package co.desofsi.tiendavirtual.maps;
 
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentActivity;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -22,6 +18,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
@@ -56,14 +56,14 @@ import java.util.Map;
 import co.desofsi.tiendavirtual.R;
 import co.desofsi.tiendavirtual.activities.ListCategoriesActivity;
 import co.desofsi.tiendavirtual.routes.Routes;
-import co.desofsi.tiendavirtual.models.Company;
-import co.desofsi.tiendavirtual.models.TypeCompany;
+import co.desofsi.tiendavirtual.models.Delivery;
+import co.desofsi.tiendavirtual.models.Order;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+public class MapsRouteActivityOrder extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private GoogleMap mMap;
-    private ArrayList<Company> lis_companies;
-    private TypeCompany typeCompany_selected;
+    private ArrayList<Delivery> lis_deliveriman;
+    private Order order;
     private SharedPreferences sharedPreferences;
     private ImageButton btn_back;
     private ArrayList<MarkerOptions> rutas;
@@ -81,7 +81,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps);
+        setContentView(R.layout.activity_maps_order);
         init();
         getPositionUser();
         getCompanies();
@@ -92,8 +92,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void init() {
         object2 = new JSONObject();
-        typeCompany_selected = (TypeCompany) getIntent().getExtras().getSerializable("type_company_selected");
-        sharedPreferences = MapsActivity.this.getApplicationContext().getSharedPreferences("user", Context.MODE_PRIVATE);
+        order = (Order) getIntent().getExtras().getSerializable("order");
+        sharedPreferences = MapsRouteActivityOrder.this.getApplicationContext().getSharedPreferences("user", Context.MODE_PRIVATE);
         btn_back = findViewById(R.id.map_companies_btn_back);
         btn_back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -123,10 +123,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setOnMarkerClickListener(this);
 
         // mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(positionUser, 16.0f));
-        lis_companies = new ArrayList<>();
+        lis_deliveriman = new ArrayList<>();
         rutas = new ArrayList<>();
 
-        String url = Routes.COMPANIES + "/" + typeCompany_selected.getId();
+        String url = Routes.DELIVERYMAN;
         System.out.println(url);
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
@@ -137,27 +137,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             JSONObject object = new JSONObject(response);
                             object2 = object;
                             if (object.getBoolean("success")) {
-                                JSONArray array = new JSONArray(object.getString("companies"));
+                                JSONArray array = new JSONArray(object.getString("deliveryman"));
 
                                 for (int i = 0; i < array.length(); i++) {
                                     JSONObject type_object = array.getJSONObject(i);
 
-                                    Company company = new Company();
-                                    company.setId(type_object.getInt("id"));
-                                    company.setCompany_name(type_object.getString("company_name"));
-                                    company.setCompany_address(type_object.getString("company_address"));
-                                    company.setCompany_phone(type_object.getString("company_phone"));
-                                    company.setCompany_description(type_object.getString("company_description"));
-                                    company.setLatitude(type_object.getString("latitude"));
-                                    company.setLongitude(type_object.getString("longitude"));
-                                    company.setUrl_merchant(type_object.getString("url_merchant"));
+                                    Delivery delivery = new Delivery();
+                                    delivery.setId(type_object.getInt("id"));
+                                    delivery.setName(type_object.getString("name"));
+                                    delivery.setLast_name(type_object.getString("last_name"));
+                                    delivery.setPhone(type_object.getString("phone"));
+                                    delivery.setVehicle_plate(type_object.getString("vehicle_plate"));
+                                    delivery.setVehicle_description(type_object.getString("vehicle_description"));
+                                    delivery.setUrl_vehicle(type_object.getString("url_vehicle"));
+                                    delivery.setStatus(type_object.getString("status"));
+                                    delivery.setStatus_order(type_object.getString("status_order"));
+                                    delivery.setLongitude(type_object.getString("longitude"));
+                                    delivery.setLatitud(type_object.getString("latitude"));
+                                    delivery.setType_vehicle(type_object.getString("type_vehicle"));
 
-                                    lis_companies.add(company);
+                                    lis_deliveriman.add(delivery);
 
-                                    double latitude = Double.parseDouble(company.getLatitude());
-                                    double longitude = Double.parseDouble(company.getLongitude());
+                                    double latitude = Double.parseDouble(delivery.getLatitud());
+                                    double longitude = Double.parseDouble(delivery.getLongitude());
                                     LatLng coordenadas = new LatLng(latitude, longitude);
-                                    MarkerOptions markerOptions = new MarkerOptions().position(coordenadas).title(company.getCompany_name());
+                                    MarkerOptions markerOptions = new MarkerOptions() .icon(bitmapCustomer(getApplicationContext(), R.drawable.track))
+                                            .position(coordenadas).title(delivery.getName() + " " + delivery.getLast_name());
                                     rutas.add(markerOptions);
 
                                 }
@@ -165,10 +170,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     mMap.addMarker(ruta);
 
                                 }
-                                LatLng positionUser = new LatLng(llocaliza.getLatitude(), llocaliza.getLongitude());
-                                mMap.addMarker(new MarkerOptions().icon(bitmapCustomer(getApplicationContext(), R.drawable.ic_custom_pin_circle_40)).anchor(0.0f, 1.0f).position(positionUser).title("Mi posición"));
+                                double latitude = llocaliza.getLatitude();
+                                double longitude = llocaliza.getLongitude();
+                                try {
+                                    latitude = Double.parseDouble(order.getLatitude_company());
+                                    longitude = Double.parseDouble(order.getLongitude_company());
+
+                                } catch (Exception e) {
+
+                                }
+                                LatLng positionUser = new LatLng(latitude, longitude);
+                                mMap.addMarker(new MarkerOptions()
+                                        .icon(bitmapCustomer(getApplicationContext(), R.drawable.store))
+                                        .anchor(0.0f, 1.0f)
+                                        .position(positionUser)
+                                        .title(order.getName_company()));
                                 //mMap.addMarker(new MarkerOptions().position(positionUser).title("Mi posición"));
-                                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(llocaliza.getLatitude(), llocaliza.getLongitude()), 12));
+                                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 17));
                                 // mMap.moveCamera(CameraUpdateFactory.newLatLng(positionUser));
 
 
@@ -198,7 +216,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
 
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(MapsActivity.this);
+        RequestQueue requestQueue = Volley.newRequestQueue(MapsRouteActivityOrder.this);
         int socketTimeout = 10000;
         RetryPolicy policy = new DefaultRetryPolicy(socketTimeout, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
         stringRequest.setRetryPolicy(policy);
@@ -209,18 +227,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void getPositionUser() {
 
-        ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-        if (ActivityCompat.checkSelfPermission(MapsActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-            Toast.makeText(MapsActivity.this, "no hay permiso", Toast.LENGTH_LONG).show();
+        ActivityCompat.requestPermissions(MapsRouteActivityOrder.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        if (ActivityCompat.checkSelfPermission(MapsRouteActivityOrder.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            Toast.makeText(MapsRouteActivityOrder.this, "no hay permiso", Toast.LENGTH_LONG).show();
         else {
-            localizar = (LocationManager) MapsActivity.this.getSystemService(Context.LOCATION_SERVICE);
+            localizar = (LocationManager) MapsRouteActivityOrder.this.getSystemService(Context.LOCATION_SERVICE);
             llocaliza = localizar.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
             if (llocaliza != null) {
                 //  txt_lon.setText(String.valueOf(llocaliza.getLongitude()));
                 // txt_lati.setText(String.valueOf(llocaliza.getLatitude()));
                 //Toast.makeText(MapsActivity.this, " ubicacion  " + llocaliza.getLatitude() + " , " + llocaliza.getLongitude(), Toast.LENGTH_LONG).show();
             } else {
-                Toast.makeText(MapsActivity.this, "no hay ubicacion", Toast.LENGTH_LONG).show();
+                Toast.makeText(MapsRouteActivityOrder.this, "no hay ubicacion", Toast.LENGTH_LONG).show();
             }
         }
 
@@ -236,10 +254,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+
     public void getCompanies() {
-        lis_companies = new ArrayList<>();
+        lis_deliveriman = new ArrayList<>();
         rutas = new ArrayList<>();
-        String url = Routes.COMPANIES + "/" + typeCompany_selected.getId();
+        String url = Routes.COMPANIES + "/" + order.getId();
         System.out.println(url);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
@@ -254,22 +273,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 for (int i = 0; i < array.length(); i++) {
                                     JSONObject type_object = array.getJSONObject(i);
 
-                                    Company company = new Company();
-                                    company.setId(type_object.getInt("id"));
-                                    company.setCompany_name(type_object.getString("company_name"));
-                                    company.setCompany_address(type_object.getString("company_address"));
-                                    company.setCompany_phone(type_object.getString("company_phone"));
-                                    company.setCompany_description(type_object.getString("company_description"));
-                                    company.setLatitude(type_object.getString("latitude"));
-                                    company.setLongitude(type_object.getString("longitude"));
-                                    company.setUrl_merchant(type_object.getString("url_merchant"));
+                                    Delivery delivery = new Delivery();
+                                    delivery.setId(type_object.getInt("id"));
+                                    delivery.setName(type_object.getString("name"));
+                                    delivery.setLast_name(type_object.getString("last_name"));
+                                    delivery.setPhone(type_object.getString("phone"));
+                                    delivery.setVehicle_plate(type_object.getString("vehicle_plate"));
+                                    delivery.setVehicle_description(type_object.getString("vehicle_description"));
+                                    delivery.setUrl_vehicle(type_object.getString("url_vehicle"));
+                                    delivery.setStatus(type_object.getString("status"));
+                                    delivery.setStatus_order(type_object.getString("status_order"));
+                                    delivery.setLongitude(type_object.getString("longitude"));
+                                    delivery.setLatitud(type_object.getString("latitud"));
+                                    delivery.setType_vehicle(type_object.getString("type_vehicle"));
 
-                                    lis_companies.add(company);
+                                    lis_deliveriman.add(delivery);
 
-                                    double latitude = Double.parseDouble(company.getLatitude());
-                                    double longitude = Double.parseDouble(company.getLongitude());
+                                    lis_deliveriman.add(delivery);
+
+                                    double latitude = Double.parseDouble(delivery.getLatitud());
+                                    double longitude = Double.parseDouble(delivery.getLongitude());
                                     LatLng coordenadas = new LatLng(latitude, longitude);
-                                    MarkerOptions markerOptions = new MarkerOptions().position(coordenadas).title(company.getCompany_name());
+                                    MarkerOptions markerOptions = new MarkerOptions().position(coordenadas).title(delivery.getName() + " " + delivery.getLast_name());
                                     rutas.add(markerOptions);
 
                                 }
@@ -301,7 +326,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
 
         };
-        RequestQueue requestQueue = Volley.newRequestQueue(MapsActivity.this);
+        RequestQueue requestQueue = Volley.newRequestQueue(MapsRouteActivityOrder.this);
         int socketTimeout = 10000;
         RetryPolicy policy = new DefaultRetryPolicy(socketTimeout, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
         stringRequest.setRetryPolicy(policy);
@@ -309,31 +334,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+
     @Override
     public boolean onMarkerClick(Marker marker) {
 
         System.out.println("ARRAY = >>> \n" + marker.getTitle());
-        String name_company = "";
+        String name_delivery = "";
         int id = 0;
-        String description_company = "";
-        String phone_company = "";
-        String address_company = "";
-        String url_image="";
-        Company company_selected  = new Company();
-        for (Company company : lis_companies) {
-            if (company.getCompany_name().equals(marker.getTitle())) {
-                name_company = company.getCompany_name();
-                id = company.getId();
-                description_company = company.getCompany_description();
-                phone_company = company.getCompany_phone();
-                address_company = company.getCompany_address();
-                url_image = company.getUrl_merchant();
-                company_selected = company;
+        String description_delivery = "";
+        String phone_delivery = "";
+        String type_vehicle = "";
+        String url_image = "";
+        Delivery deliveryselect = new Delivery();
+        for (Delivery delivery_for : lis_deliveriman) {
+            String names = delivery_for.getName() + " " + delivery_for.getLast_name();
+            if (names.equals(marker.getTitle())) {
+                id = delivery_for.getId();
+                name_delivery = names;
+                description_delivery = delivery_for.getVehicle_description();
+                phone_delivery = delivery_for.getPhone();
+                type_vehicle = delivery_for.getType_vehicle();
+                url_image = delivery_for.getUrl_vehicle();
+                deliveryselect = delivery_for;
             }
         }
         if (id != 0) {
-            final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(MapsActivity.this, R.style.BottomSheetDialogTheme);
-            View buttomSheetView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.bottom_detail_map,
+            final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(MapsRouteActivityOrder.this, R.style.BottomSheetDialogTheme);
+            View buttomSheetView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.bottom_detail_delivery_map,
                     (LinearLayout) findViewById(R.id.liner_detail_map));
             txt_name = buttomSheetView.findViewById(R.id.bottom_sheet_name);
             txt_description = buttomSheetView.findViewById(R.id.bottom_sheet_description);
@@ -342,20 +369,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             image = buttomSheetView.findViewById(R.id.bottom_sheet_image);
 
             ///CARGAR DATOS
-            txt_name.setText(name_company);
-            txt_description.setText(description_company);
-            txt_phone.setText(phone_company);
-            txt_address.setText(address_company);
-            Picasso.get().load(Routes.URL+url_image).into(image);
+            txt_name.setText(name_delivery);
+            txt_description.setText(description_delivery);
+            txt_phone.setText(phone_delivery);
+            txt_address.setText(type_vehicle);
+            Picasso.get().load(Routes.URL + url_image).into(image);
 
 
-            final Company finalCompany_selected = company_selected;
+            final Delivery finaldelivery_selected = deliveryselect;
             buttomSheetView.findViewById(R.id.bottom_sheet_btn_shop).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     bottomSheetDialog.dismiss();
-                    Intent intent =  new Intent(MapsActivity.this, ListCategoriesActivity.class);
-                    intent.putExtra("company_selected", finalCompany_selected);
+                    Intent intent = new Intent(MapsRouteActivityOrder.this, ListCategoriesActivity.class);
+                    intent.putExtra("company_selected", finaldelivery_selected);
                     startActivity(intent);
                 }
             });

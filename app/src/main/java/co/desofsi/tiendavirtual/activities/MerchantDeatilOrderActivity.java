@@ -40,8 +40,7 @@ import java.util.Map;
 
 import co.desofsi.tiendavirtual.R;
 import co.desofsi.tiendavirtual.adapters.ReviewListProductstAdapter;
-import co.desofsi.tiendavirtual.data.Constant;
-import co.desofsi.tiendavirtual.maps.MapsActivity;
+import co.desofsi.tiendavirtual.routes.Routes;
 import co.desofsi.tiendavirtual.maps.MapsActivityOrder;
 import co.desofsi.tiendavirtual.models.DateClass;
 import co.desofsi.tiendavirtual.models.DetailOrder;
@@ -150,7 +149,7 @@ public class MerchantDeatilOrderActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void downloadPdf() {
-        String url = Constant.URL + order.getUrl_order();
+        String url = Routes.URL + order.getUrl_order();
         System.out.println(url);
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
         String tempTitle = order.getOrder_number();
@@ -179,7 +178,7 @@ public class MerchantDeatilOrderActivity extends AppCompatActivity {
     }
 
     public void startDownLoad() {
-        String url = Constant.URL + order.getUrl_order();
+        String url = Routes.URL + order.getUrl_order();
         String tempTitle = order.getOrder_number();
         System.out.println(url);
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
@@ -220,7 +219,7 @@ public class MerchantDeatilOrderActivity extends AppCompatActivity {
 
     private void getOrdersDetail() {
         lis_products = new ArrayList<>();
-        String url = Constant.ORDER_DETAIL + "/" + order.getId();
+        String url = Routes.ORDER_DETAIL + "/" + order.getId();
         System.out.println(url);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {

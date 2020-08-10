@@ -1,7 +1,6 @@
 package co.desofsi.tiendavirtual.adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,11 +29,8 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 import co.desofsi.tiendavirtual.R;
 import co.desofsi.tiendavirtual.activities.ListCategoriesActivity;
-import co.desofsi.tiendavirtual.activities.ListComapiesActivity;
-import co.desofsi.tiendavirtual.activities.ShowProductActivity;
-import co.desofsi.tiendavirtual.data.Constant;
+import co.desofsi.tiendavirtual.routes.Routes;
 import co.desofsi.tiendavirtual.models.Category;
-import co.desofsi.tiendavirtual.models.Company;
 import co.desofsi.tiendavirtual.models.Product;
 
 public class ListCategoriesAdapter extends RecyclerView.Adapter<ListCategoriesAdapter.ListCategoriesHolder> {
@@ -46,7 +42,7 @@ public class ListCategoriesAdapter extends RecyclerView.Adapter<ListCategoriesAd
     public void getProducts(Category category) {
         ListCategoriesActivity.list_products = new ArrayList<>();
         //ListCategoriesActivity.refreshLayout.setRefreshing(true);
-        String url = Constant.PRODUCTS + "/" + category.getId();
+        String url = Routes.PRODUCTS + "/" + category.getId();
         // System.out.println(url);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
@@ -127,7 +123,7 @@ public class ListCategoriesAdapter extends RecyclerView.Adapter<ListCategoriesAd
 
         final Category categoy = list.get(position);
 
-        Picasso.get().load(Constant.URL + categoy.getUrl_image()).into(holder.imageView_specialty);
+        Picasso.get().load(Routes.URL + categoy.getUrl_image()).into(holder.imageView_specialty);
         // System.out.println(company.getName());
         holder.txt_name.setText(categoy.getName());
         holder.cardView.setOnClickListener(new View.OnClickListener() {

@@ -31,37 +31,35 @@ import java.util.HashMap;
 import java.util.Map;
 
 import co.desofsi.tiendavirtual.R;
-import co.desofsi.tiendavirtual.adapters.OrderListAdapter;
+import co.desofsi.tiendavirtual.adaptersdelivery.OrderListDeliveryAdapter;
+import co.desofsi.tiendavirtual.adaptersmerchant.OrderListMerchantAdapter;
+import co.desofsi.tiendavirtual.models.OrderRequestDelivery;
 import co.desofsi.tiendavirtual.routes.Routes;
 import co.desofsi.tiendavirtual.models.Order;
 
-
-public class OrderFragment extends Fragment {
+public class RequestDeliveryFragment extends Fragment {
     private View view;
     private SwipeRefreshLayout refreshLayout;
     private RecyclerView recyclerView;
     private SharedPreferences sharedPreferences;
-    private ArrayList<Order> lis_orders;
+    private ArrayList<OrderRequestDelivery> lis_orders;
 
-    public OrderFragment() {
+    public RequestDeliveryFragment() {
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_order, container, false);
+        view = inflater.inflate(R.layout.fragment_delivery_request, container, false);
         init();
-
         getOrders();
-
-
         return view;
     }
 
     private void init() {
         sharedPreferences = getContext().getApplicationContext().getSharedPreferences("user", Context.MODE_PRIVATE);
-        refreshLayout = view.findViewById(R.id.order_fragment_swipe);
-        recyclerView = view.findViewById(R.id.order_fragment_recycler);
+        refreshLayout = view.findViewById(R.id.delivery_fragment_swipe);
+        recyclerView = view.findViewById(R.id.delivery_fragment_recycler);
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager mLayoutManager = new GridLayoutManager(getContext(), 1);
         //LinearLayoutManager horizontalLayoutManagaer = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
@@ -79,8 +77,8 @@ public class OrderFragment extends Fragment {
     private void getOrders() {
         lis_orders = new ArrayList<>();
         refreshLayout.setRefreshing(true);
-        System.out.println(Routes.LOGIN);
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, Routes.ORDERS,
+        System.out.println(Routes.GET_REQUEST_DELIVERY);
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, Routes.GET_REQUEST_DELIVERY,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -91,21 +89,29 @@ public class OrderFragment extends Fragment {
 
                                 for (int i = 0; i < array.length(); i++) {
                                     JSONObject type_object = array.getJSONObject(i);
-                                    Order order = new Order();
-                                    order.setId(type_object.getInt("id"));
-                                    order.setId_customer(type_object.getInt("id_customer"));
-                                    order.setId_user(type_object.getInt("id_user"));
-                                    order.setId_company(type_object.getInt("id_company"));
-                                    order.setName_customer(type_object.getString("name_customer"));
-                                    order.setName_company(type_object.getString("name_company"));
-                                    order.setOrder_number(type_object.getString("order_number"));
-                                    order.setTotal(type_object.getString("total"));
-                                    order.setStatus(type_object.getString("status"));
-                                    order.setDate(type_object.getString("created_at"));
-                                    order.setUrl_order(type_object.getString("url_order"));
-                                    lis_orders.add(order);
+                                    OrderRequestDelivery order_request = new OrderRequestDelivery();
+                                    order_request.setId(type_object.getInt("id"));
+                                    order_request.setId_delivery(type_object.getInt("id_delivery"));
+                                    order_request.setId_order(type_object.getInt("id_order"));
+                                    order_request.setId_company(type_object.getInt("id_company"));
+
+                                    order_request.setName_customer(type_object.getString("name_customer"));
+                                    order_request.setName_company(type_object.getString("name_company"));
+                                    order_request.setCompany_address(type_object.getString("company_address"));
+                                    order_request.setOrder_number(type_object.getString("order_number"));
+                                    order_request.setTotal(type_object.getString("total"));
+                                    order_request.setStatus(type_object.getString("status"));
+                                    order_request.setStatus_request(type_object.getString("status_request"));
+                                    order_request.setDate(type_object.getString("datetime"));
+                                    order_request.setUrl_order(type_object.getString("url_order"));
+                                    order_request.setLongitude_company(type_object.getString("longitude_com"));
+                                    order_request.setLatitude_company(type_object.getString("latitude_com"));
+                                    order_request.setLongitude_order(type_object.getString("longitude_order"));
+                                    order_request.setLatitude_order(type_object.getString("latitude_order"));
+
+                                    lis_orders.add(order_request);
                                 }
-                                OrderListAdapter orderListAdapter = new OrderListAdapter(getContext(), lis_orders);
+                                OrderListDeliveryAdapter orderListAdapter = new OrderListDeliveryAdapter(getContext(), lis_orders);
                                 recyclerView.setAdapter(orderListAdapter);
 
                             }

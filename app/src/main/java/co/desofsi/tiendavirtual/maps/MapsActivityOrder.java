@@ -1,7 +1,10 @@
 package co.desofsi.tiendavirtual.maps;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -54,12 +57,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import co.desofsi.tiendavirtual.R;
-import co.desofsi.tiendavirtual.activities.ListCategoriesActivity;
-import co.desofsi.tiendavirtual.data.Constant;
-import co.desofsi.tiendavirtual.models.Company;
+import co.desofsi.tiendavirtual.activities.HomeActivity;
+import co.desofsi.tiendavirtual.routes.Routes;
 import co.desofsi.tiendavirtual.models.Delivery;
 import co.desofsi.tiendavirtual.models.Order;
-import co.desofsi.tiendavirtual.models.TypeCompany;
+import co.desofsi.tiendavirtual.models.OrderRequestDelivery;
 
 public class MapsActivityOrder extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
@@ -79,6 +81,7 @@ public class MapsActivityOrder extends FragmentActivity implements OnMapReadyCal
     private BottomSheetBehavior mBottomSheetBehavior1;
     private RoundedImageView image;
     private TextView txt_name, txt_description, txt_address, txt_phone;
+    private ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,6 +106,8 @@ public class MapsActivityOrder extends FragmentActivity implements OnMapReadyCal
                 onBackPressed();
             }
         });
+        dialog = new ProgressDialog(MapsActivityOrder.this);
+        dialog.setCancelable(false);
 
     }
 
@@ -128,7 +133,7 @@ public class MapsActivityOrder extends FragmentActivity implements OnMapReadyCal
         lis_deliveriman = new ArrayList<>();
         rutas = new ArrayList<>();
 
-        String url = Constant.DELIVERYMAN;
+        String url = Routes.DELIVERYMAN;
         System.out.println(url);
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
@@ -163,7 +168,7 @@ public class MapsActivityOrder extends FragmentActivity implements OnMapReadyCal
                                     double latitude = Double.parseDouble(delivery.getLatitud());
                                     double longitude = Double.parseDouble(delivery.getLongitude());
                                     LatLng coordenadas = new LatLng(latitude, longitude);
-                                    MarkerOptions markerOptions = new MarkerOptions() .icon(bitmapCustomer(getApplicationContext(), R.drawable.track))
+                                    MarkerOptions markerOptions = new MarkerOptions().icon(bitmapCustomer(getApplicationContext(), R.drawable.track))
                                             .position(coordenadas).title(delivery.getName() + " " + delivery.getLast_name());
                                     rutas.add(markerOptions);
 
@@ -260,7 +265,7 @@ public class MapsActivityOrder extends FragmentActivity implements OnMapReadyCal
     public void getCompanies() {
         lis_deliveriman = new ArrayList<>();
         rutas = new ArrayList<>();
-        String url = Constant.COMPANIES + "/" + order.getId();
+        String url = Routes.COMPANIES + "/" + order.getId();
         System.out.println(url);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
@@ -375,7 +380,7 @@ public class MapsActivityOrder extends FragmentActivity implements OnMapReadyCal
             txt_description.setText(description_delivery);
             txt_phone.setText(phone_delivery);
             txt_address.setText(type_vehicle);
-            Picasso.get().load(Constant.URL + url_image).into(image);
+            Picasso.get().load(Routes.URL + url_image).into(image);
 
 
             final Delivery finaldelivery_selected = deliveryselect;
@@ -383,9 +388,25 @@ public class MapsActivityOrder extends FragmentActivity implements OnMapReadyCal
                 @Override
                 public void onClick(View view) {
                     bottomSheetDialog.dismiss();
-                    Intent intent = new Intent(MapsActivityOrder.this, ListCategoriesActivity.class);
-                    intent.putExtra("company_selected", finaldelivery_selected);
-                    startActivity(intent);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivityOrder.this);
+                    builder.setMessage("¿Estas seguro solicitar al repartidor?")
+                            .setCancelable(false)
+                            .setPositiveButton("Si", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    OrderRequestDelivery orderRequestDelivery = new OrderRequestDelivery();
+                                    orderRequestDelivery.setId_company(order.getId_company());
+                                    orderRequestDelivery.setId_delivery(finaldelivery_selected.getId());
+                                    orderRequestDelivery.setId_order(order.getId());
+                                    postOrderRequestDelvery(orderRequestDelivery);
+                                }
+                            })
+                            .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    dialog.cancel();
+                                }
+                            });
+                    AlertDialog alert = builder.create();
+                    alert.show();
                 }
             });
             bottomSheetDialog.setContentView(buttomSheetView);
@@ -393,5 +414,69 @@ public class MapsActivityOrder extends FragmentActivity implements OnMapReadyCal
         }
 
         return false;
+    }
+
+    public void postOrderRequestDelvery(OrderRequestDelivery requestDelivery) {
+
+
+        dialog.setMessage("Enviando");
+        dialog.show();
+        final String id_company = String.valueOf(requestDelivery.getId_company());
+        final String id_delivery = String.valueOf(requestDelivery.getId_delivery());
+        final String id_order = String.valueOf(requestDelivery.getId_order());
+        final String status = "enviado";
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, Routes.SEND_REQUEST_DELIVERY,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject object = new JSONObject(response);
+                            if (object.getBoolean("success")) {
+
+                                startActivity(new Intent(MapsActivityOrder.this, HomeActivity.class));
+                                finish();
+                                Toast.makeText(MapsActivityOrder.this, "Enviado", Toast.LENGTH_SHORT).show();
+                            }
+
+                        } catch (Exception e) {
+                            dialog.dismiss();
+                            e.printStackTrace();
+                        }
+                        dialog.dismiss();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        dialog.dismiss();
+                        Toast.makeText(MapsActivityOrder.this, "Error al enviar la solicitud", Toast.LENGTH_SHORT).show();
+
+                        System.out.println(error);
+                    }
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                String token = sharedPreferences.getString("token", "");
+                Map<String, String> map = new HashMap<String, String>();
+                map.put("Authorization", "Bearer " + token);
+                return map;
+            }
+
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> map = new HashMap<String, String>();
+
+                map.put("id_company", id_company);
+                map.put("id_delivery", id_delivery);
+                map.put("id_order", id_order);
+                map.put("status", status);
+                return map;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(MapsActivityOrder.this);
+        requestQueue.add(stringRequest);
+
+
     }
 }

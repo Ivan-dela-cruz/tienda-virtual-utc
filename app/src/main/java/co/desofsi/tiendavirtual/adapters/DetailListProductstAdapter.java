@@ -1,7 +1,6 @@
 package co.desofsi.tiendavirtual.adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,10 +19,8 @@ import java.util.ArrayList;
 import co.desofsi.tiendavirtual.R;
 import co.desofsi.tiendavirtual.activities.DetailOrderActivity;
 import co.desofsi.tiendavirtual.activities.ListCategoriesActivity;
-import co.desofsi.tiendavirtual.activities.ShowProductActivity;
-import co.desofsi.tiendavirtual.data.Constant;
+import co.desofsi.tiendavirtual.routes.Routes;
 import co.desofsi.tiendavirtual.models.DetailOrder;
-import co.desofsi.tiendavirtual.models.Product;
 
 public class DetailListProductstAdapter extends RecyclerView.Adapter<DetailListProductstAdapter.ListCategoriesHolder> {
 
@@ -49,7 +46,7 @@ public class DetailListProductstAdapter extends RecyclerView.Adapter<DetailListP
 
         final DetailOrder product = list.get(position);
 
-        Picasso.get().load(Constant.URL + product.getUrl_image()).into(holder.imageView_specialty);
+        Picasso.get().load(Routes.URL + product.getUrl_image()).into(holder.imageView_specialty);
         holder.txt_name.setText(product.getProduct_name());
         holder.txt_description.setText(product.getProduct_desc());
         holder.txt_price.setText("$ " + product.getPrice_total());

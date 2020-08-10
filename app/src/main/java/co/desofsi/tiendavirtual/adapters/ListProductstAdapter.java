@@ -18,10 +18,8 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 import co.desofsi.tiendavirtual.R;
 import co.desofsi.tiendavirtual.activities.ListCategoriesActivity;
-import co.desofsi.tiendavirtual.activities.ListComapiesActivity;
 import co.desofsi.tiendavirtual.activities.ShowProductActivity;
-import co.desofsi.tiendavirtual.data.Constant;
-import co.desofsi.tiendavirtual.models.Category;
+import co.desofsi.tiendavirtual.routes.Routes;
 import co.desofsi.tiendavirtual.models.Product;
 
 public class ListProductstAdapter extends RecyclerView.Adapter<ListProductstAdapter.ListCategoriesHolder> {
@@ -48,7 +46,7 @@ public class ListProductstAdapter extends RecyclerView.Adapter<ListProductstAdap
 
         final Product product = list.get(position);
 
-        Picasso.get().load(Constant.URL + product.getUrl_image()).into(holder.imageView_specialty);
+        Picasso.get().load(Routes.URL + product.getUrl_image()).into(holder.imageView_specialty);
         holder.txt_name.setText(product.getName());
         holder.txt_description.setText(product.getDescription());
         holder.txt_price.setText("$ "+product.getSale_price());

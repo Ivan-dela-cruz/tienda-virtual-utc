@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -17,12 +16,10 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 import co.desofsi.tiendavirtual.R;
-import co.desofsi.tiendavirtual.activities.HomeActivity;
 import co.desofsi.tiendavirtual.activities.ListCategoriesActivity;
 import co.desofsi.tiendavirtual.activities.ListComapiesActivity;
-import co.desofsi.tiendavirtual.data.Constant;
+import co.desofsi.tiendavirtual.routes.Routes;
 import co.desofsi.tiendavirtual.models.Company;
-import co.desofsi.tiendavirtual.models.TypeCompany;
 
 public class ListCompanyAdapter extends RecyclerView.Adapter<ListCompanyAdapter.ListCompaniesHolder> {
 
@@ -48,7 +45,7 @@ public class ListCompanyAdapter extends RecyclerView.Adapter<ListCompanyAdapter.
 
         final Company company = list.get(position);
 
-        Picasso.get().load(Constant.URL + company.getUrl_merchant()).into(holder.imageView_specialty);
+        Picasso.get().load(Routes.URL + company.getUrl_merchant()).into(holder.imageView_specialty);
         holder.txt_name.setText(company.getCompany_name());
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override

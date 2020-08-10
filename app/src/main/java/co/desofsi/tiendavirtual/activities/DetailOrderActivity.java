@@ -30,7 +30,6 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
@@ -42,9 +41,7 @@ import java.util.Map;
 
 import co.desofsi.tiendavirtual.R;
 import co.desofsi.tiendavirtual.adapters.DetailListProductstAdapter;
-import co.desofsi.tiendavirtual.adapters.ListProductstAdapter;
-import co.desofsi.tiendavirtual.data.Constant;
-import co.desofsi.tiendavirtual.init.AuthActivity;
+import co.desofsi.tiendavirtual.routes.Routes;
 import co.desofsi.tiendavirtual.models.DetailOrder;
 
 public class DetailOrderActivity extends AppCompatActivity {
@@ -136,7 +133,7 @@ public class DetailOrderActivity extends AppCompatActivity {
         //System.out.println("ARRAY ENVIADO ===>> \n" + array.toString());
         //System.out.println("ENCABEZAADO ENVIADO ===>> \n" +" = "+id_company+" = "+total_order);
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, Constant.SEND_ORDER,
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, Routes.SEND_ORDER,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {

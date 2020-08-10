@@ -8,7 +8,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import co.desofsi.tiendavirtual.R;
 import co.desofsi.tiendavirtual.adapters.ListCompanyAdapter;
-import co.desofsi.tiendavirtual.data.Constant;
+import co.desofsi.tiendavirtual.routes.Routes;
 import co.desofsi.tiendavirtual.maps.MapsActivity;
 import co.desofsi.tiendavirtual.models.Company;
 import co.desofsi.tiendavirtual.models.TypeCompany;
@@ -21,7 +21,6 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -68,7 +67,7 @@ public class ListComapiesActivity extends AppCompatActivity {
         btn_back = findViewById(R.id.list_companies_btn_back);
         btn_map = findViewById(R.id.list_companies_btn_map);
 
-        Picasso.get().load(Constant.URL + typeCompany_selected.getUrl_image()).into(imageView);
+        Picasso.get().load(Routes.URL + typeCompany_selected.getUrl_image()).into(imageView);
         list_companies_text_baner.setText(typeCompany_selected.getName());
         text_descrip.setText(typeCompany_selected.getDescription());
 
@@ -111,7 +110,7 @@ public class ListComapiesActivity extends AppCompatActivity {
         lis_companies = new ArrayList<>();
         refreshLayout.setRefreshing(true);
 
-        String url = Constant.COMPANIES + "/" + typeCompany_selected.getId();
+        String url = Routes.COMPANIES + "/" + typeCompany_selected.getId();
         System.out.println(url);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
