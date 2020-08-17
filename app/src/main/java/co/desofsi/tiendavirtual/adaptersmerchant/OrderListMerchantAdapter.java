@@ -17,8 +17,7 @@ import java.util.ArrayList;
 
 import co.desofsi.tiendavirtual.R;
 import co.desofsi.tiendavirtual.activities.HomeActivity;
-import co.desofsi.tiendavirtual.activities.MerchantDeatilOrderActivity;
-import co.desofsi.tiendavirtual.activities.ShowOrderDetailActivity;
+import co.desofsi.tiendavirtual.merchantsactivities.MerchantDeatilOrderActivity;
 import co.desofsi.tiendavirtual.models.DateClass;
 import co.desofsi.tiendavirtual.models.Order;
 

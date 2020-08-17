@@ -17,9 +17,9 @@ import java.util.ArrayList;
 
 import co.desofsi.tiendavirtual.R;
 import co.desofsi.tiendavirtual.activities.HomeActivity;
-import co.desofsi.tiendavirtual.activities.MerchantDeatilOrderActivity;
+import co.desofsi.tiendavirtual.deliveryactivities.DeliveryDetailActivity;
+import co.desofsi.tiendavirtual.merchantsactivities.MerchantDeatilOrderActivity;
 import co.desofsi.tiendavirtual.models.DateClass;
-import co.desofsi.tiendavirtual.models.Order;
 import co.desofsi.tiendavirtual.models.OrderRequestDelivery;
 
 public class OrderListDeliveryAdapter extends RecyclerView.Adapter<OrderListDeliveryAdapter.TypeCompanyHolder> {
@@ -57,7 +57,7 @@ public class OrderListDeliveryAdapter extends RecyclerView.Adapter<OrderListDeli
         holder.btn_options.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(((HomeActivity) context), MerchantDeatilOrderActivity.class);
+                Intent intent = new Intent(((HomeActivity) context), DeliveryDetailActivity.class);
                 intent.putExtra("order", order);
                 intent.putExtra("position", position);
                 context.startActivity(intent);
