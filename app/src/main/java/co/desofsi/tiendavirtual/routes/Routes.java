@@ -14,6 +14,10 @@ public class Routes {
     //public static  final String URL = "http://tiendavirtualutc.herokuapp.com/";
     public static final String HOME = URL + "api";
     public static final String LOGIN = HOME + "/login";
+    public static final String LOGOUT = HOME + "/logout";
+    public static final String GET_PROFILE = HOME + "/get-profile";
+    public static final String UPDATE_PROFILE = HOME + "/save-profile-user";
+    public static final String UPDATE_PASSWORD = HOME + "/change-password";
     public static final String REGISTER = HOME + "/register";
     public static final String SAVE_PROFILE = HOME + "/save-profile-user";
     public static final String TYPE_COMPANES = HOME + "/api-companies-type";

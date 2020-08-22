@@ -95,7 +95,7 @@
 
                         <TextView
                             android:gravity="center|start"
-                            android:id="@+id/account_fragment_txt_movil"
+                            android:id="@+id/account_fragment_txt_ci"
                             android:layout_width="match_parent"
                             android:layout_height="40dp"
                             android:layout_below="@+id/account_fragment_txt_email"
@@ -248,6 +248,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
                     <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/account_fragment_image"
                         android:layout_width="120dp"
                         android:layout_height="120dp"
                         android:padding="3dp"

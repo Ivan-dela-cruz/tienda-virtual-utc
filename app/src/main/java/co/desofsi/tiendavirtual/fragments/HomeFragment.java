@@ -67,8 +67,7 @@ public class HomeFragment extends Fragment  {
 
        // recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         refreshLayout = view.findViewById(R.id.home_fragment_swipe);
-        toolbar = view.findViewById(R.id.home_fragment_toolbar);
-        ((HomeActivity) getActivity()).setSupportActionBar(toolbar);
+
 
 
         getSpecialties();

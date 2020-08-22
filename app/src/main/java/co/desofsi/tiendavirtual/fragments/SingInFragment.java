@@ -34,6 +34,7 @@ import androidx.fragment.app.Fragment;
 
 import co.desofsi.tiendavirtual.R;
 import co.desofsi.tiendavirtual.activities.HomeActivity;
+import co.desofsi.tiendavirtual.deliveryactivities.HomeDeliveryActivity;
 import co.desofsi.tiendavirtual.routes.Routes;
 import co.desofsi.tiendavirtual.init.AuthActivity;
 
@@ -156,6 +157,7 @@ public class SingInFragment extends Fragment {
                         try {
                             JSONObject object = new JSONObject(response);
                             if (object.getBoolean("success")) {
+                                String role = "";
                                 JSONObject user = object.getJSONObject("user");
                                 SharedPreferences userPref = getActivity().getApplicationContext().getSharedPreferences("user", getContext().MODE_PRIVATE);
                                 SharedPreferences.Editor editor = userPref.edit();
@@ -167,12 +169,16 @@ public class SingInFragment extends Fragment {
                                 editor.putString("email", user.getString("email"));
                                 editor.putString("url_image", user.getString("url_image"));
                                 editor.putBoolean("isLoggedIn", true);
+                                editor.putString("role", object.getString("role"));
+                                role = object.getString("role");
                                 editor.apply();
 
 
                                 startActivity(new Intent(((AuthActivity) getContext()), HomeActivity.class));
                                 ((AuthActivity) getContext()).finish();
                                 Toast.makeText(getContext(), "Conectado", Toast.LENGTH_SHORT).show();
+
+
                             }
                         } catch (Exception e) {
                             dialog.dismiss();
