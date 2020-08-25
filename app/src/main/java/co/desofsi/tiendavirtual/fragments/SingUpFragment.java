@@ -204,6 +204,7 @@ public class SingUpFragment extends Fragment {
                                 editor.putString("username", user.getString("username"));
                                 editor.putString("url_image", user.getString("url_image"));
                                 editor.putBoolean("isLoggedIn",true);
+                                editor.putString("role", object.getString("role"));
                                 editor.apply();
 
 

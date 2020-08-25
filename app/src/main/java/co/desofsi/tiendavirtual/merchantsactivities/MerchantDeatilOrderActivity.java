@@ -7,8 +7,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -39,7 +41,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import co.desofsi.tiendavirtual.R;
+import co.desofsi.tiendavirtual.activities.HomeActivity;
 import co.desofsi.tiendavirtual.adapters.ReviewListProductstAdapter;
+import co.desofsi.tiendavirtual.models.Company;
 import co.desofsi.tiendavirtual.routes.Routes;
 import co.desofsi.tiendavirtual.maps.MapsActivityOrder;
 import co.desofsi.tiendavirtual.models.DateClass;
@@ -53,10 +57,11 @@ public class MerchantDeatilOrderActivity extends AppCompatActivity {
 
     private ImageButton btn_home, btn_download;
     private TextView txt_order_number, txt_order_customer, txt_order_data, txt_order_company, txt_order_total, txt_status;
-    private Button btn_delivery, btn_map;
+    private Button btn_delivery, btn_deactivate;
     private ScrollView scrollView;
     private DateClass dateClass;
     private Order order;
+    private Company company;
 
     private static final int PERMISSION_STORAGE_CODE = 1000;
 
@@ -67,10 +72,20 @@ public class MerchantDeatilOrderActivity extends AppCompatActivity {
         try {
             order = new Order();
             order = (Order) getIntent().getExtras().getSerializable("order");
+            company = order.getCompany();
             init();
             eventsButtons();
             loadReviewOrder();
             getOrdersDetail();
+            if (order.getStatus().equals("anulado")) {
+                btn_delivery.setVisibility(View.GONE);
+                btn_deactivate.setVisibility(View.GONE);
+            }
+            if (order.getStatus().equals("pendiente")) {
+                btn_deactivate.setVisibility(View.VISIBLE);
+            }else{
+                btn_deactivate.setVisibility(View.GONE);
+            }
 
         } catch (Exception e) {
             Toast.makeText(MerchantDeatilOrderActivity.this, "Error: " + e, Toast.LENGTH_SHORT).show();
@@ -89,8 +104,8 @@ public class MerchantDeatilOrderActivity extends AppCompatActivity {
         txt_order_total = findViewById(R.id.merchant_detail_order_txt_total);
         btn_home = findViewById(R.id.merchant_detail_order_btn_back);
         btn_download = findViewById(R.id.merchant_detail_order_btn_download);
-        btn_delivery = findViewById(R.id.merchant_detail_order_btn_asig);
-        btn_map = findViewById(R.id.merchant_detail_order_btn_map);
+        btn_delivery = findViewById(R.id.merchant_detail_order_btn_map);
+        btn_deactivate = findViewById(R.id.merchant_detail_order_btn_deactivate);
         scrollView = findViewById(R.id.merchant_detail_order_scroll);
         recyclerView = findViewById(R.id.merchant_detail_order_recycler);
         txt_status = findViewById(R.id.merchant_detail_order_txt_status);
@@ -135,7 +150,7 @@ public class MerchantDeatilOrderActivity extends AppCompatActivity {
                 }
             }
         });
-        btn_map.setOnClickListener(new View.OnClickListener() {
+        btn_delivery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MerchantDeatilOrderActivity.this, MapsActivityOrder.class);
@@ -144,7 +159,69 @@ public class MerchantDeatilOrderActivity extends AppCompatActivity {
 
             }
         });
+        btn_deactivate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(MerchantDeatilOrderActivity.this);
+                builder.setMessage("¿Está seguro de anular la orden")
+                        .setCancelable(false)
+                        .setPositiveButton("SI", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                deactivateOrder();
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+                AlertDialog alert = builder.create();
+                alert.show();
 
+            }
+        });
+
+    }
+
+    public void deactivateOrder() {
+        String url = Routes.ORDER_DEACTIVATE + "/" + order.getId();
+        System.out.println(url);
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject object = new JSONObject(response);
+                            if (object.getBoolean("success")) {
+                                Intent intent = new Intent(MerchantDeatilOrderActivity.this, CompanyOrdersActivity.class);
+                                intent.putExtra("company", company);
+                                startActivity(intent);
+                            }
+                        } catch (Exception e) {
+
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        System.out.println(error);
+
+                    }
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                String token = sharedPreferences.getString("token", "");
+                Map<String, String> map = new HashMap<String, String>();
+                map.put("Authorization", "Bearer " + token);
+                return map;
+            }
+
+
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(MerchantDeatilOrderActivity.this);
+        requestQueue.add(stringRequest);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)

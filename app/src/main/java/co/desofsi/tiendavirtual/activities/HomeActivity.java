@@ -6,12 +6,14 @@ import androidx.fragment.app.FragmentManager;
 
 import co.desofsi.tiendavirtual.R;
 import co.desofsi.tiendavirtual.deliveryactivities.HomeDeliveryActivity;
+import co.desofsi.tiendavirtual.deliveryactivities.RequestDeliveryCustomerFragment;
 import co.desofsi.tiendavirtual.fragments.AccountFragment;
 import co.desofsi.tiendavirtual.fragments.HomeFragment;
 import co.desofsi.tiendavirtual.fragments.RequestDeliveryFragment;
 import co.desofsi.tiendavirtual.fragments.OrderFragment;
 import co.desofsi.tiendavirtual.fragments.MerchantHomeFragment;
 import co.desofsi.tiendavirtual.init.AuthActivity;
+import co.desofsi.tiendavirtual.merchantsactivities.OrderFragmentMerchant;
 
 import android.Manifest;
 import android.content.Context;
@@ -52,6 +54,8 @@ public class HomeActivity extends AppCompatActivity {
     private final static int ID_MESSAGE = 3;
     private final static int ID_NOTIFICATION = 4;
     private final static int ID_ACCOUNT = 5;
+    private final static int ID_MERCHANT = 6;
+    private final static int ID_CUSTOMER_DELIVERY = 7;
     LocationManager locationManager;
     Location location;
     SharedPreferences sharedPreferences;
@@ -64,14 +68,11 @@ public class HomeActivity extends AppCompatActivity {
         sharedPreferences = HomeActivity.this.getSharedPreferences("user", Context.MODE_PRIVATE);
         String role = sharedPreferences.getString("role", "");
         fragmentManager = getSupportFragmentManager();
-        getPositionUser();
+        //getPositionUser();
 
         final TextView tvSelected = findViewById(R.id.tv_selected);
         tvSelected.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/SourceSansPro-Regular.ttf"));
-
         MeowBottomNavigation bottomNavigation = findViewById(R.id.bottomNavigation);
-
-
 
 
         if (role.equalsIgnoreCase("Cliente")) {
@@ -80,17 +81,20 @@ public class HomeActivity extends AppCompatActivity {
             bottomNavigation.add(new MeowBottomNavigation.Model(ID_ACCOUNT, R.drawable.ic_account_circle_black_24dp));
         }
         if (role.equalsIgnoreCase("Empresario")) {
-            bottomNavigation.add(new MeowBottomNavigation.Model(ID_EXPLORE, R.drawable.ic_baseline_shopping_cart_24));
+            bottomNavigation.add(new MeowBottomNavigation.Model(ID_MERCHANT, R.drawable.ic_baseline_shopping_cart_24));
             bottomNavigation.add(new MeowBottomNavigation.Model(ID_MESSAGE, R.drawable.ic_baseline_directions_bike_24));
             bottomNavigation.add(new MeowBottomNavigation.Model(ID_ACCOUNT, R.drawable.ic_account_circle_black_24dp));
         }
         if (role.equalsIgnoreCase("Repartidor")) {
             bottomNavigation.add(new MeowBottomNavigation.Model(ID_NOTIFICATION, R.drawable.ic_notifications_black_24dp));
+            bottomNavigation.add(new MeowBottomNavigation.Model(ID_CUSTOMER_DELIVERY, R.drawable.ic_baseline_card_giftcard_24));
             bottomNavigation.add(new MeowBottomNavigation.Model(ID_ACCOUNT, R.drawable.ic_account_circle_black_24dp));
         }
 
 
-        bottomNavigation.setCount(ID_NOTIFICATION, "115");
+
+
+      //  bottomNavigation.setCount(ID_NOTIFICATION, "115");
 
 
 
@@ -134,6 +138,27 @@ public class HomeActivity extends AppCompatActivity {
                         fragmentManager.beginTransaction().replace(R.id.home_frame_container, new AccountFragment(), AccountFragment.class.getSimpleName()).commit();
 
                         break;
+
+
+
+
+                    case ID_MERCHANT:
+                        name = "MERCHANT";
+                        fragmentManager.beginTransaction().replace(R.id.home_frame_container, new OrderFragmentMerchant(), OrderFragmentMerchant.class.getSimpleName()).commit();
+
+                        break;
+
+
+
+                    case ID_CUSTOMER_DELIVERY:
+                        name = "DELIVERY";
+                        fragmentManager.beginTransaction().replace(R.id.home_frame_container, new RequestDeliveryCustomerFragment(), RequestDeliveryCustomerFragment.class.getSimpleName()).commit();
+
+                        break;
+
+
+
+
                     default:
                         name = "";
                 }
@@ -148,13 +173,13 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-        bottomNavigation.setCount(ID_NOTIFICATION, "115");
+      //  bottomNavigation.setCount(ID_NOTIFICATION, "115");
 
         if (role.equalsIgnoreCase("Cliente")) {
             bottomNavigation.show(ID_HOME, true);
         }
         if (role.equalsIgnoreCase("Empresario")) {
-            bottomNavigation.show(ID_EXPLORE, true);
+            bottomNavigation.show(ID_MERCHANT, true);
         }
         if (role.equalsIgnoreCase("Repartidor")) {
             bottomNavigation.show(ID_NOTIFICATION, true);

@@ -58,7 +58,7 @@
         <activity android:name=".activities.ShowProductActivity" />
         <activity android:name=".activities.ListCategoriesActivity" />
         <activity android:name=".activities.ListComapiesActivity" />
-        <activity android:name=".activities.CompanyActivity" />
+        <activity android:name=".merchantsactivities.CompanyOrdersActivity" />
         <activity android:name=".activities.UserProfileActivity" />
         <activity android:name=".init.AuthActivity" />
         <activity android:name=".init.OnBoardActivity" />

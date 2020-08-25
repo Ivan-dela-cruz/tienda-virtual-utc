@@ -53,7 +53,25 @@ public class OrderListDeliveryAdapter extends RecyclerView.Adapter<OrderListDeli
         holder.txt_customer.setText("Para: " + order.getName_customer());
         holder.text_date.setText(dateClass.time(order.getDate()) + dateClass.dateFormatHuman(order.getDate()));
         holder.text_total.setText(" $ " + order.getTotal());
-        holder.text_status.setText(order.getStatus());
+        holder.text_status.setText(order.getStatus_request());
+
+        switch (order.getStatus()){
+            case "anulado":
+                holder.imageView.setImageResource(R.drawable.ic_baseline_close_24);
+                break;
+            case "pendiente":
+                holder.imageView.setImageResource(R.drawable.ic_baseline_store_mall_directory_24);
+                break;
+            case "confirmado":
+                holder.imageView.setImageResource(R.drawable.ic_baseline_confirmation_number_24);
+                break;
+            case "entregado":
+                holder.imageView.setImageResource(R.drawable.ic_baseline_check_circle_24);
+                break;
+            case "no entregado":
+                holder.imageView.setImageResource(R.drawable.ic_baseline_local_taxi_24);
+                break;
+        }
         holder.btn_options.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -57,4 +57,55 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginBottom="5dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/route_confirm"
+            android:layout_width="150dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/blue_border_rounded_cornwe"
+            android:fontFamily="@font/opensans_regular"
+            android:text="Confirmar"
+            android:textAllCaps="false"
+            android:textColor="@color/colorWhite"
+            android:textSize="15sp" />
+
+
+        <Button
+            android:visibility="gone"
+            android:layout_marginStart="20dp"
+            android:id="@+id/route_complete"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/green_border_rounded_cornwe"
+            android:fontFamily="@font/opensans_regular"
+            android:text="Finalizar entrega"
+            android:textAllCaps="false"
+            android:textColor="@color/colorWhite"
+            android:textSize="15sp" />
+
+        <Button
+            android:id="@+id/route_send"
+            android:layout_width="150dp"
+            android:layout_height="40dp"
+            android:background="@drawable/red_border_rounded_cornwe"
+            android:fontFamily="@font/opensans_regular"
+            android:text="Rechazar"
+            android:textAllCaps="false"
+            android:textColor="@color/colorWhite"
+            android:textSize="15sp" />
+
+    </LinearLayout>
+
 </RelativeLayout>

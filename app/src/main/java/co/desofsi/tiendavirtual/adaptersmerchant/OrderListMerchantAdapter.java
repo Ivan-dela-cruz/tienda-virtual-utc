@@ -17,6 +17,7 @@ import java.util.ArrayList;
 
 import co.desofsi.tiendavirtual.R;
 import co.desofsi.tiendavirtual.activities.HomeActivity;
+import co.desofsi.tiendavirtual.merchantsactivities.CompanyOrdersActivity;
 import co.desofsi.tiendavirtual.merchantsactivities.MerchantDeatilOrderActivity;
 import co.desofsi.tiendavirtual.models.DateClass;
 import co.desofsi.tiendavirtual.models.Order;
@@ -52,10 +53,28 @@ public class OrderListMerchantAdapter extends RecyclerView.Adapter<OrderListMerc
         holder.text_date.setText(dateClass.time(order.getDate())  + dateClass.dateFormatHuman(order.getDate()));
         holder.text_total.setText(" $ " + order.getTotal());
         holder.text_status.setText(order.getStatus());
+
+        switch (order.getStatus()){
+            case "anulado":
+                holder.imageView.setImageResource(R.drawable.ic_baseline_close_24);
+            break;
+            case "pendiente":
+                holder.imageView.setImageResource(R.drawable.ic_baseline_store_mall_directory_24);
+                break;
+            case "confirmado":
+                holder.imageView.setImageResource(R.drawable.ic_baseline_confirmation_number_24);
+                break;
+            case "entregado":
+                holder.imageView.setImageResource(R.drawable.ic_baseline_check_circle_24);
+                break;
+            case "no entregado":
+                holder.imageView.setImageResource(R.drawable.ic_baseline_local_taxi_24);
+                break;
+        }
         holder.btn_options.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(((HomeActivity) context), MerchantDeatilOrderActivity.class);
+                Intent intent = new Intent(((CompanyOrdersActivity) context), MerchantDeatilOrderActivity.class);
                 intent.putExtra("order", order);
                 intent.putExtra("position", position);
                 context.startActivity(intent);

@@ -7,8 +7,12 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -20,6 +24,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -52,7 +57,10 @@ import java.util.Map;
 
 import co.desofsi.tiendavirtual.R;
 import co.desofsi.tiendavirtual.activities.DetailOrderActivity;
+import co.desofsi.tiendavirtual.activities.HomeActivity;
 import co.desofsi.tiendavirtual.activities.ListCategoriesActivity;
+import co.desofsi.tiendavirtual.merchantsactivities.CompanyOrdersActivity;
+import co.desofsi.tiendavirtual.merchantsactivities.MerchantDeatilOrderActivity;
 import co.desofsi.tiendavirtual.models.Delivery;
 import co.desofsi.tiendavirtual.models.OrderRequestDelivery;
 import co.desofsi.tiendavirtual.routes.Routes;
@@ -65,8 +73,10 @@ public class RouteDeliveryActivity extends FragmentActivity implements OnMapRead
     Location location;
     private ImageButton back;
     private double my_latitude, my_longitude;
+    private Button btn_confirm, btn_send_not,btn_complete;
 
     private static final int PERMISSION_LOCATION = 1;
+    private SharedPreferences sharedPreferences;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -74,7 +84,11 @@ public class RouteDeliveryActivity extends FragmentActivity implements OnMapRead
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_route_delivery);
         orderRequestDelivery = (OrderRequestDelivery) getIntent().getExtras().getSerializable("order");
+        sharedPreferences = getApplicationContext().getSharedPreferences("user", Context.MODE_PRIVATE);
         back = findViewById(R.id.map_route_btn_back);
+        btn_confirm = findViewById(R.id.route_confirm);
+        btn_send_not = findViewById(R.id.route_send);
+        btn_complete = findViewById(R.id.route_complete);
         getPositionUser();
         // Toast.makeText(RouteDeliveryActivity.this, "" + orderRequestDelivery.getLatitude_company(), Toast.LENGTH_SHORT).show();
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -89,6 +103,200 @@ public class RouteDeliveryActivity extends FragmentActivity implements OnMapRead
             }
         });
 
+        if(orderRequestDelivery.getStatus_request().equals("aceptado")){
+            btn_complete.setVisibility(View.VISIBLE);
+            btn_send_not.setVisibility(View.GONE);
+            btn_confirm.setVisibility(View.GONE);
+        }
+        if(orderRequestDelivery.getStatus_request().equals("entregado")){
+            btn_complete.setVisibility(View.GONE);
+            btn_send_not.setVisibility(View.GONE);
+            btn_confirm.setVisibility(View.GONE);
+        }
+
+        btn_confirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(RouteDeliveryActivity.this);
+                builder.setMessage("¿Está seguro de aceptar la entrega de esta orden")
+                        .setCancelable(false)
+                        .setPositiveButton("SI", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                confirmDelivery();
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+                AlertDialog alert = builder.create();
+                alert.show();
+
+            }
+        });
+        btn_send_not.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(RouteDeliveryActivity.this);
+                builder.setMessage("¿Está seguro de rechazar la orden")
+                        .setCancelable(false)
+                        .setPositiveButton("SI", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                declineDelivery();
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+                AlertDialog alert = builder.create();
+                alert.show();
+
+            }
+        });
+        btn_complete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(RouteDeliveryActivity.this);
+                builder.setMessage("¿Está seguro en finalizar la entrega")
+                        .setCancelable(false)
+                        .setPositiveButton("SI", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                completeDelivery();
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+                AlertDialog alert = builder.create();
+                alert.show();
+
+            }
+        });
+
+    }
+
+    public void completeDelivery() {
+        String url = Routes.COMPLETE_DELIVERY + "/" + orderRequestDelivery.getId();
+        System.out.println(url);
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject object = new JSONObject(response);
+                            if (object.getBoolean("success")) {
+                                Intent intent = new Intent(RouteDeliveryActivity.this, HomeActivity.class);
+                                startActivity(intent);
+                            }
+                        } catch (Exception e) {
+
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        System.out.println(error);
+
+                    }
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                String token = sharedPreferences.getString("token", "");
+                Map<String, String> map = new HashMap<String, String>();
+                map.put("Authorization", "Bearer " + token);
+                return map;
+            }
+
+
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(RouteDeliveryActivity.this);
+        requestQueue.add(stringRequest);
+    }
+
+    public void confirmDelivery() {
+        String url = Routes.CONFIRM_DELIVERY + "/" + orderRequestDelivery.getId();
+        System.out.println(url);
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject object = new JSONObject(response);
+                            if (object.getBoolean("success")) {
+                                Intent intent = new Intent(RouteDeliveryActivity.this, HomeActivity.class);
+                                startActivity(intent);
+                            }
+                        } catch (Exception e) {
+
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        System.out.println(error);
+
+                    }
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                String token = sharedPreferences.getString("token", "");
+                Map<String, String> map = new HashMap<String, String>();
+                map.put("Authorization", "Bearer " + token);
+                return map;
+            }
+
+
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(RouteDeliveryActivity.this);
+        requestQueue.add(stringRequest);
+    }
+    public void declineDelivery() {
+        String url = Routes.DECLINE_DELIVERY + "/" + orderRequestDelivery.getId();
+        System.out.println(url);
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject object = new JSONObject(response);
+                            if (object.getBoolean("success")) {
+                                Intent intent = new Intent(RouteDeliveryActivity.this, HomeActivity.class);
+                                startActivity(intent);
+                            }
+                        } catch (Exception e) {
+
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        System.out.println(error);
+
+                    }
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                String token = sharedPreferences.getString("token", "");
+                Map<String, String> map = new HashMap<String, String>();
+                map.put("Authorization", "Bearer " + token);
+                return map;
+            }
+
+
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(RouteDeliveryActivity.this);
+        requestQueue.add(stringRequest);
     }
 
     /**

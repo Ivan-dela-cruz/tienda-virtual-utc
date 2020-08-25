@@ -7,8 +7,17 @@ public class Order implements Serializable {
     private int id, id_customer,id_user,id_company;
     private String date, total, status, order_number,name_company,name_customer,date_format,url_order,longitude_company,latitude_company,longitude_order,latitude_order;
     private ArrayList<DetailOrder> list_detail;
+    private Company company;
 
     public Order() {
+    }
+
+    public Company getCompany() {
+        return company;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
     }
 
     public String getLongitude_company() {
