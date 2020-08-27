@@ -62,7 +62,7 @@
 
                         <LinearLayout
                             android:layout_width="296dp"
-                            android:layout_height="300.3dp"
+                            android:layout_height="360.3dp"
                             android:layout_marginBottom="35dp"
                             android:background="@drawable/white_rounded_corner"
                             android:orientation="vertical"
@@ -139,6 +139,21 @@
                                     android:layout_height="wrap_content"
                                     android:hint="Télefono"
                                     android:inputType="text|phone"
+                                    android:textSize="15sp" />
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:id="@+id/edit_profile_address_ly"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="6dp">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/edit_profile_address"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:hint="Dirección"
+                                    android:inputType="text"
                                     android:textSize="15sp" />
                             </com.google.android.material.textfield.TextInputLayout>
 

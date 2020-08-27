@@ -219,7 +219,7 @@ public class HomeActivity extends AppCompatActivity {
 
             @Override
             public void onFinish() {
-                Toast.makeText(HomeActivity.this, "Puntos actualizados", Toast.LENGTH_SHORT).show();
+               // Toast.makeText(HomeActivity.this, "Puntos actualizados", Toast.LENGTH_SHORT).show();
                 insertLocation();
             }
         };
@@ -240,7 +240,7 @@ public class HomeActivity extends AppCompatActivity {
                             JSONObject object = new JSONObject(response);
                             if (object.getBoolean("success")) {
 
-                                Toast.makeText(HomeActivity.this, "Actualizado", Toast.LENGTH_SHORT).show();
+                             //   Toast.makeText(HomeActivity.this, "Actualizado", Toast.LENGTH_SHORT).show();
                                 CountDownTimer();
                             }
                         } catch (Exception e) {
@@ -296,7 +296,7 @@ public class HomeActivity extends AppCompatActivity {
                         if (location != null) {
                             latitude_now = location.getLatitude();
                             longitude_now = location.getLongitude();
-                            Toast.makeText(HomeActivity.this, "Lat: " + location.getLatitude() + " Long: " + location.getLongitude(), Toast.LENGTH_SHORT).show();
+                          //  Toast.makeText(HomeActivity.this, "Lat: " + location.getLatitude() + " Long: " + location.getLongitude(), Toast.LENGTH_SHORT).show();
 
                         }
                     }

@@ -53,7 +53,7 @@ public class EditProfileActivity extends AppCompatActivity {
     private ImageButton btn_back;
     private ImageView img_user;
     private TextInputLayout ly_name, ly_last_name, ly_phone, ly_movil;
-    private TextInputEditText name, last_name, phone, ci;
+    private TextInputEditText name, last_name, phone, ci, address;
     private User user;
 
     private ProgressDialog dialog;
@@ -80,6 +80,7 @@ public class EditProfileActivity extends AppCompatActivity {
         last_name.setText(user.getLast_name());
         ci.setText(user.getCi());
         phone.setText(user.getPhone());
+        address.setText(user.getAddress());
 
 
     }
@@ -97,6 +98,7 @@ public class EditProfileActivity extends AppCompatActivity {
         last_name = findViewById(R.id.edit_profile_last_name);
         ci = findViewById(R.id.edit_profile_movil);
         phone = findViewById(R.id.edit_profile_phone);
+        address = findViewById(R.id.edit_profile_address);
 
         txt_btn_image = findViewById(R.id.edit_profile_txt_img);
         btn_save = findViewById(R.id.edit_profile_btn_save);
@@ -108,7 +110,7 @@ public class EditProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                if (validate()){
+                if (validate()) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(EditProfileActivity.this);
                     builder.setMessage("¿Desea cambiar los datos?")
                             .setCancelable(false)
@@ -233,6 +235,7 @@ public class EditProfileActivity extends AppCompatActivity {
         final String last_names = last_name.getText().toString().trim();
         final String cis = ci.getText().toString().trim();
         final String phones = phone.getText().toString().trim();
+        final String address_u = address.getText().toString().trim();
 
 
         StringRequest stringRequest = new StringRequest(Request.Method.POST, Routes.UPDATE_PROFILE,
@@ -277,6 +280,7 @@ public class EditProfileActivity extends AppCompatActivity {
                 map.put("last_name", last_names);
                 map.put("ci", cis);
                 map.put("phone", phones);
+                map.put("address", address_u);
                 map.put("url_image", bitmapToString(bitmap));
 
                 return map;

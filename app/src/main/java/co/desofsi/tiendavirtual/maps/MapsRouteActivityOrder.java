@@ -263,7 +263,7 @@ public class MapsRouteActivityOrder extends FragmentActivity implements OnMapRea
                     public void onSuccess(Location location) {
                         // Got last known location. In some rare situations this can be null.
                         if (location != null) {
-                            Toast.makeText(MapsRouteActivityOrder.this, "Lat: " + location.getLatitude() + " Long: " + location.getLongitude(), Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(MapsRouteActivityOrder.this, "Lat: " + location.getLatitude() + " Long: " + location.getLongitude(), Toast.LENGTH_SHORT).show();
                             latitude_now = location.getLatitude();
                             longitude_now = location.getLongitude();
                         }
