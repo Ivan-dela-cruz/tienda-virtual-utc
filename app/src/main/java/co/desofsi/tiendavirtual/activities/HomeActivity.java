@@ -13,7 +13,9 @@ import co.desofsi.tiendavirtual.fragments.RequestDeliveryFragment;
 import co.desofsi.tiendavirtual.fragments.OrderFragment;
 import co.desofsi.tiendavirtual.fragments.MerchantHomeFragment;
 import co.desofsi.tiendavirtual.init.AuthActivity;
+import co.desofsi.tiendavirtual.maps.MapsActivityOrder;
 import co.desofsi.tiendavirtual.merchantsactivities.OrderFragmentMerchant;
+import co.desofsi.tiendavirtual.routes.Routes;
 
 import android.Manifest;
 import android.content.Context;
@@ -26,11 +28,13 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -38,16 +42,26 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.etebarian.meowbottomnavigation.MeowBottomNavigation;
+import com.google.android.gms.location.FusedLocationProviderApi;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import static co.desofsi.tiendavirtual.routes.Routes.TIMER_MAP;
+
 public class HomeActivity extends AppCompatActivity {
 
+    private int REQUEST_CODE = 1;
     private FragmentManager fragmentManager;
     private final static int ID_HOME = 1;
     private final static int ID_EXPLORE = 2;
@@ -59,7 +73,14 @@ public class HomeActivity extends AppCompatActivity {
     LocationManager locationManager;
     Location location;
     SharedPreferences sharedPreferences;
-    public  static String role = "";
+    public static String role = "";
+
+
+    private FusedLocationProviderClient fusedLocationClient;
+    private CountDownTimer yourCountDownTimer;
+    private double latitude_now = 0;
+    private double longitude_now = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,11 +113,7 @@ public class HomeActivity extends AppCompatActivity {
         }
 
 
-
-
-      //  bottomNavigation.setCount(ID_NOTIFICATION, "115");
-
-
+        //  bottomNavigation.setCount(ID_NOTIFICATION, "115");
 
 
         bottomNavigation.setOnClickMenuListener(new MeowBottomNavigation.ClickListener() {
@@ -140,8 +157,6 @@ public class HomeActivity extends AppCompatActivity {
                         break;
 
 
-
-
                     case ID_MERCHANT:
                         name = "MERCHANT";
                         fragmentManager.beginTransaction().replace(R.id.home_frame_container, new OrderFragmentMerchant(), OrderFragmentMerchant.class.getSimpleName()).commit();
@@ -149,14 +164,11 @@ public class HomeActivity extends AppCompatActivity {
                         break;
 
 
-
                     case ID_CUSTOMER_DELIVERY:
                         name = "DELIVERY";
                         fragmentManager.beginTransaction().replace(R.id.home_frame_container, new RequestDeliveryCustomerFragment(), RequestDeliveryCustomerFragment.class.getSimpleName()).commit();
 
                         break;
-
-
 
 
                     default:
@@ -173,7 +185,9 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-      //  bottomNavigation.setCount(ID_NOTIFICATION, "115");
+        //  bottomNavigation.setCount(ID_NOTIFICATION, "115");
+
+        getFuseLocationUser();
 
         if (role.equalsIgnoreCase("Cliente")) {
             bottomNavigation.show(ID_HOME, true);
@@ -183,10 +197,110 @@ public class HomeActivity extends AppCompatActivity {
         }
         if (role.equalsIgnoreCase("Repartidor")) {
             bottomNavigation.show(ID_NOTIFICATION, true);
+            CountDownTimer();
         }
 
 
+    }
 
+
+    private void CountDownTimer() {
+
+        if (yourCountDownTimer != null) {
+            yourCountDownTimer.cancel();
+        }
+        yourCountDownTimer = new CountDownTimer(TIMER_MAP, TIMER_MAP) {
+
+            @Override
+            public void onTick(long l) {
+                //  Log.e("Seconds : ", "" + l / 1000);
+
+            }
+
+            @Override
+            public void onFinish() {
+                Toast.makeText(HomeActivity.this, "Puntos actualizados", Toast.LENGTH_SHORT).show();
+                insertLocation();
+            }
+        };
+        yourCountDownTimer.start();
+
+    }
+
+    public void insertLocation() {
+        getFuseLocationUser();
+        final String latitude_delivery = String.valueOf(latitude_now);
+        final String longitude_delivery = String.valueOf(longitude_now);
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, Routes.UPDATED_POSITION,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject object = new JSONObject(response);
+                            if (object.getBoolean("success")) {
+
+                                Toast.makeText(HomeActivity.this, "Actualizado", Toast.LENGTH_SHORT).show();
+                                CountDownTimer();
+                            }
+                        } catch (Exception e) {
+
+                            e.printStackTrace();
+                        }
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                        Toast.makeText(HomeActivity.this, "Error al guardar", Toast.LENGTH_LONG).show();
+                        System.out.println(error);
+                    }
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                String token = sharedPreferences.getString("token", "");
+                Map<String, String> map = new HashMap<String, String>();
+                map.put("Authorization", "Bearer " + token);
+                return map;
+            }
+
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> map = new HashMap<String, String>();
+                map.put("latitude", latitude_delivery);
+                map.put("longitude", longitude_delivery);
+
+                return map;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(HomeActivity.this);
+        requestQueue.add(stringRequest);
+    }
+
+    public void getFuseLocationUser() {
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(HomeActivity.this);
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(HomeActivity.this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    REQUEST_CODE);
+            return;
+        }
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        // Got last known location. In some rare situations this can be null.
+                        if (location != null) {
+                            latitude_now = location.getLatitude();
+                            longitude_now = location.getLongitude();
+                            Toast.makeText(HomeActivity.this, "Lat: " + location.getLatitude() + " Long: " + location.getLongitude(), Toast.LENGTH_SHORT).show();
+
+                        }
+                    }
+                });
 
     }
 
@@ -230,17 +344,16 @@ public class HomeActivity extends AppCompatActivity {
 
 
             return;
-        }else {
+        } else {
             locationManager = (LocationManager) HomeActivity.this.getSystemService(Context.LOCATION_SERVICE);
             location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
             if (location != null) {
-              Toast.makeText(HomeActivity.this, " ubicacion  " + location.getLatitude() + " , " + location.getLongitude(), Toast.LENGTH_LONG).show();
+                Toast.makeText(HomeActivity.this, " ubicacion  " + location.getLatitude() + " , " + location.getLongitude(), Toast.LENGTH_LONG).show();
             } else {
 
                 Toast.makeText(HomeActivity.this, "Tu ubicación no ha sido encontrada", Toast.LENGTH_LONG).show();
             }
         }
-
 
 
     }
@@ -267,8 +380,6 @@ public class HomeActivity extends AppCompatActivity {
 
         }
     }
-
-
 
 
 }

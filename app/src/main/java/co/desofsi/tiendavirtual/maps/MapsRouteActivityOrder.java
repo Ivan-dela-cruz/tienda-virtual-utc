@@ -11,6 +11,8 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
@@ -32,6 +34,8 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -41,6 +45,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.makeramen.roundedimageview.RoundedImageView;
@@ -54,6 +59,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import co.desofsi.tiendavirtual.R;
+import co.desofsi.tiendavirtual.activities.HomeActivity;
 import co.desofsi.tiendavirtual.activities.ListCategoriesActivity;
 import co.desofsi.tiendavirtual.routes.Routes;
 import co.desofsi.tiendavirtual.models.Delivery;
@@ -63,14 +69,18 @@ public class MapsRouteActivityOrder extends FragmentActivity implements OnMapRea
 
     private GoogleMap mMap;
     private ArrayList<Delivery> lis_deliveriman;
+    private ArrayList<Delivery> real_time_lis_deliveriman;
     private Order order;
     private SharedPreferences sharedPreferences;
     private ImageButton btn_back;
     private ArrayList<MarkerOptions> rutas;
+    private ArrayList<MarkerOptions> real_time_rutas;
     LocationManager localizar;
     Location llocaliza;
     JSONObject object2;
     SupportMapFragment mapFragment;
+    private FusedLocationProviderClient fusedLocationClient;
+    private int REQUEST_CODE = 1;
 
     ///DETALLE MAPA
     ImageView imgmarker;
@@ -78,16 +88,24 @@ public class MapsRouteActivityOrder extends FragmentActivity implements OnMapRea
     private RoundedImageView image;
     private TextView txt_name, txt_description, txt_address, txt_phone;
 
+
+    private double latitude_now = 0;
+    private double longitude_now = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps_order);
         init();
-        getPositionUser();
-        getCompanies();
+        //getPositionUser();
+        getFuseLocationUser();
+
+        //getCompanies();
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+
     }
 
     public void init() {
@@ -103,6 +121,8 @@ public class MapsRouteActivityOrder extends FragmentActivity implements OnMapRea
         });
 
     }
+
+
 
     /**
      * Manipulates the map once available.
@@ -125,9 +145,11 @@ public class MapsRouteActivityOrder extends FragmentActivity implements OnMapRea
         // mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(positionUser, 16.0f));
         lis_deliveriman = new ArrayList<>();
         rutas = new ArrayList<>();
+        real_time_rutas = new ArrayList<>();
 
         String url = Routes.DELIVERYMAN;
         System.out.println(url);
+        mMap.clear();
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
@@ -161,7 +183,7 @@ public class MapsRouteActivityOrder extends FragmentActivity implements OnMapRea
                                     double latitude = Double.parseDouble(delivery.getLatitud());
                                     double longitude = Double.parseDouble(delivery.getLongitude());
                                     LatLng coordenadas = new LatLng(latitude, longitude);
-                                    MarkerOptions markerOptions = new MarkerOptions() .icon(bitmapCustomer(getApplicationContext(), R.drawable.track))
+                                    MarkerOptions markerOptions = new MarkerOptions().icon(bitmapCustomer(getApplicationContext(), R.drawable.track))
                                             .position(coordenadas).title(delivery.getName() + " " + delivery.getLast_name());
                                     rutas.add(markerOptions);
 
@@ -170,13 +192,15 @@ public class MapsRouteActivityOrder extends FragmentActivity implements OnMapRea
                                     mMap.addMarker(ruta);
 
                                 }
-                                double latitude = llocaliza.getLatitude();
-                                double longitude = llocaliza.getLongitude();
+                                double latitude = latitude_now;
+                                double longitude = longitude_now;
                                 try {
                                     latitude = Double.parseDouble(order.getLatitude_company());
                                     longitude = Double.parseDouble(order.getLongitude_company());
+                                    Toast.makeText(MapsRouteActivityOrder.this, "Entro", Toast.LENGTH_LONG).show();
 
                                 } catch (Exception e) {
+                                    Toast.makeText(MapsRouteActivityOrder.this, "no entro", Toast.LENGTH_LONG).show();
 
                                 }
                                 LatLng positionUser = new LatLng(latitude, longitude);
@@ -188,7 +212,6 @@ public class MapsRouteActivityOrder extends FragmentActivity implements OnMapRea
                                 //mMap.addMarker(new MarkerOptions().position(positionUser).title("Mi posición"));
                                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 17));
                                 // mMap.moveCamera(CameraUpdateFactory.newLatLng(positionUser));
-
 
                             }
                         } catch (Exception e) {
@@ -222,6 +245,30 @@ public class MapsRouteActivityOrder extends FragmentActivity implements OnMapRea
         stringRequest.setRetryPolicy(policy);
         requestQueue.add(stringRequest);
 
+
+    }
+
+    public void getFuseLocationUser() {
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(MapsRouteActivityOrder.this);
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MapsRouteActivityOrder.this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    REQUEST_CODE);
+            return;
+        }
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        // Got last known location. In some rare situations this can be null.
+                        if (location != null) {
+                            Toast.makeText(MapsRouteActivityOrder.this, "Lat: " + location.getLatitude() + " Long: " + location.getLongitude(), Toast.LENGTH_SHORT).show();
+                            latitude_now = location.getLatitude();
+                            longitude_now = location.getLongitude();
+                        }
+                    }
+                });
 
     }
 

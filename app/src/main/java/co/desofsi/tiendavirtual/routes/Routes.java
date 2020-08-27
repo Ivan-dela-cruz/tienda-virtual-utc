@@ -34,6 +34,7 @@ public class Routes {
     public static final String ORDER_DEACTIVATE = HOME + "/api-deactivate-order";
 
     //RUTA PARA LOS REPARTIDORES
+    public static final String UPDATED_POSITION = HOME + "/api-update-position";
     public static final String DELIVERYMAN = HOME + "/api-deliveriman";
     public static final String SEND_REQUEST_DELIVERY = HOME + "/api-send-request-delivery";
     public static final String GET_REQUEST_DELIVERY = HOME + "/api-get-request-delivery";
@@ -46,4 +47,8 @@ public class Routes {
     public static final String MY_COMPANIES = HOME + "/api-get-companies";
     public static final String ORDERS_COMPANY = HOME + "/api-orders-merchant";
 
+
+
+    //TIMER  REFRESH MAP
+    public static final int TIMER_MAP = 30000;
 }

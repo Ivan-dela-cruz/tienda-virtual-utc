@@ -14,6 +14,8 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
@@ -35,6 +37,8 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -44,6 +48,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.makeramen.roundedimageview.RoundedImageView;
@@ -58,16 +63,20 @@ import java.util.Map;
 
 import co.desofsi.tiendavirtual.R;
 import co.desofsi.tiendavirtual.activities.HomeActivity;
+import co.desofsi.tiendavirtual.models.Company;
 import co.desofsi.tiendavirtual.routes.Routes;
 import co.desofsi.tiendavirtual.models.Delivery;
 import co.desofsi.tiendavirtual.models.Order;
 import co.desofsi.tiendavirtual.models.OrderRequestDelivery;
+
+import static co.desofsi.tiendavirtual.routes.Routes.TIMER_MAP;
 
 public class MapsActivityOrder extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private GoogleMap mMap;
     private ArrayList<Delivery> lis_deliveriman;
     private Order order;
+    private Company company;
     private SharedPreferences sharedPreferences;
     private ImageButton btn_back;
     private ArrayList<MarkerOptions> rutas;
@@ -83,31 +92,70 @@ public class MapsActivityOrder extends FragmentActivity implements OnMapReadyCal
     private TextView txt_name, txt_description, txt_address, txt_phone;
     private ProgressDialog dialog;
 
+    private FusedLocationProviderClient fusedLocationClient;
+    private int REQUEST_CODE = 1;
+    private double latitude_now = 0;
+    private double longitude_now = 0;
+    private CountDownTimer yourCountDownTimer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps_order);
         init();
-        getPositionUser();
+        // getPositionUser();
+        getFuseLocationUser();
         getCompanies();
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        CountDownTimer();
     }
 
     public void init() {
         object2 = new JSONObject();
         order = (Order) getIntent().getExtras().getSerializable("order");
+        company = order.getCompany();
+        // Toast.makeText(MapsActivityOrder.this, "Lat: " + company.getLatitude() + " Long: " + company.getLongitude(), Toast.LENGTH_SHORT).show();
+
         sharedPreferences = MapsActivityOrder.this.getApplicationContext().getSharedPreferences("user", Context.MODE_PRIVATE);
         btn_back = findViewById(R.id.map_companies_btn_back);
         btn_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                yourCountDownTimer.cancel();
+
                 onBackPressed();
+
+                finish();
             }
         });
         dialog = new ProgressDialog(MapsActivityOrder.this);
         dialog.setCancelable(false);
+
+    }
+
+    private void CountDownTimer() {
+
+        if (yourCountDownTimer != null) {
+            yourCountDownTimer.cancel();
+        }
+        yourCountDownTimer = new CountDownTimer(TIMER_MAP, TIMER_MAP) {
+
+            @Override
+            public void onTick(long l) {
+                //  Log.e("Seconds : ", "" + l / 1000);
+
+            }
+
+            @Override
+            public void onFinish() {
+                Toast.makeText(MapsActivityOrder.this, "Puntos actualizados", Toast.LENGTH_SHORT).show();
+                onMapReady(mMap);
+            }
+        };
+        yourCountDownTimer.start();
 
     }
 
@@ -177,11 +225,11 @@ public class MapsActivityOrder extends FragmentActivity implements OnMapReadyCal
                                     mMap.addMarker(ruta);
 
                                 }
-                                double latitude = llocaliza.getLatitude();
-                                double longitude = llocaliza.getLongitude();
+                                double latitude = latitude_now;
+                                double longitude = longitude_now;
                                 try {
-                                    latitude = Double.parseDouble(order.getLatitude_company());
-                                    longitude = Double.parseDouble(order.getLongitude_company());
+                                    latitude = Double.parseDouble(company.getLatitude());
+                                    longitude = Double.parseDouble(company.getLongitude());
 
                                 } catch (Exception e) {
 
@@ -196,7 +244,7 @@ public class MapsActivityOrder extends FragmentActivity implements OnMapReadyCal
                                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 17));
                                 // mMap.moveCamera(CameraUpdateFactory.newLatLng(positionUser));
 
-
+                                CountDownTimer();
                             }
                         } catch (Exception e) {
 
@@ -231,6 +279,31 @@ public class MapsActivityOrder extends FragmentActivity implements OnMapReadyCal
 
 
     }
+
+    public void getFuseLocationUser() {
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(MapsActivityOrder.this);
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MapsActivityOrder.this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    REQUEST_CODE);
+            return;
+        }
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        // Got last known location. In some rare situations this can be null.
+                        if (location != null) {
+                            //  Toast.makeText(MapsActivityOrder.this, "Lat: " + location.getLatitude() + " Long: " + location.getLongitude(), Toast.LENGTH_SHORT).show();
+                            latitude_now = location.getLatitude();
+                            longitude_now = location.getLongitude();
+                        }
+                    }
+                });
+
+    }
+
 
     public void getPositionUser() {
 
