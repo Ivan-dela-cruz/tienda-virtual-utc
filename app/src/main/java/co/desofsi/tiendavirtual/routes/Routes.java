@@ -10,7 +10,7 @@ public class Routes {
     public static final String  API_KEY = "&key=AIzaSyDvwB2Wj-5mF2NAziR3Uc_oHhX9bt_mYMg";
 
     //public static final String URL = "http://192.168.0.105:8000/";
-    public static  final String URL = "https://www.tiendavirtualutc.xyz/";
+    public static  final String URL = "https://www.tiendavirtualutc.com/";
     //public static  final String URL = "http://tiendavirtualutc.herokuapp.com/";
     public static final String HOME = URL + "api";
     public static final String LOGIN = HOME + "/login";

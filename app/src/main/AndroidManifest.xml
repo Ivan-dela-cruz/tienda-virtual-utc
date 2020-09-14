@@ -20,7 +20,7 @@
         android:label="@string/app_name"
         android:networkSecurityConfig="@xml/network_secutity_config"
         android:requestLegacyExternalStorage="true"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/ic_utc"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".deliveryactivities.HomeDeliveryActivity"></activity>
