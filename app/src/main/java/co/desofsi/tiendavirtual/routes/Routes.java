@@ -7,7 +7,7 @@ public class Routes {
 
     public static final String URL_MAP  = "https://maps.googleapis.com/maps/api/directions/json?origin=";
     public static final String DESTINATION = "&destination=";
-    public static final String  API_KEY = "&key=AIzaSyDvwB2Wj-5mF2NAziR3Uc_oHhX9bt_mYMg";
+    public static final String  API_KEY = "&key=AIzaSyDibwJl271dqQbcVduSLr56yCct_RMX8_g";
 
     //public static final String URL = "http://192.168.0.105:8000/";
     public static  final String URL = "https://www.tiendavirtualutc.com/";
