@@ -107,7 +107,7 @@ public class DetailOrderActivity extends AppCompatActivity {
     private void postOrder() {
         dialog.setMessage("Enviando");
         dialog.show();
-        DecimalFormat format = new DecimalFormat("#.00");// el numero de ceros despues del entero
+
         // final String id_user = String.valueOf(ListCategoriesActivity.order.getId_user());
         final String id_company = String.valueOf(ListCategoriesActivity.order.getId_company());
         final String total_order = ListCategoriesActivity.order.getTotal();
@@ -191,7 +191,6 @@ public class DetailOrderActivity extends AppCompatActivity {
 
     public static double loadTotalPay() {
         double total = 0;
-        DecimalFormat format = new DecimalFormat("#.00");// el numero de ceros despues del entero
 
         try {
             if (ListCategoriesActivity.list_detail.size() > 0) {
@@ -199,7 +198,7 @@ public class DetailOrderActivity extends AppCompatActivity {
                     total += Double.parseDouble(detailOrder.getPrice_total());
                 }
             }
-            ListCategoriesActivity.order.setTotal("" +  format.format(total));
+            ListCategoriesActivity.order.setTotal("" + total);
             return total;
         } catch (Exception e) {
             return total;
