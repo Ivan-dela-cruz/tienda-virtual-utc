@@ -36,6 +36,7 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -189,13 +190,15 @@ public class DetailOrderActivity extends AppCompatActivity {
 
     public static double loadTotalPay() {
         double total = 0;
+        DecimalFormat format = new DecimalFormat("#.00");// el numero de ceros despues del entero
+
         try {
             if (ListCategoriesActivity.list_detail.size() > 0) {
                 for (DetailOrder detailOrder : ListCategoriesActivity.list_detail) {
                     total += Double.parseDouble(detailOrder.getPrice_total());
                 }
             }
-            ListCategoriesActivity.order.setTotal("" + total);
+            ListCategoriesActivity.order.setTotal("" +  format.format(total));
             return total;
         } catch (Exception e) {
             return total;
@@ -235,7 +238,7 @@ public class DetailOrderActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void getPositionUser() {
 
-        // ActivityCompat.requestPermissions(DetailOrderActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+       // ActivityCompat.requestPermissions(DetailOrderActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         if (ActivityCompat.checkSelfPermission(DetailOrderActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED) {
             String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION};
             requestPermissions(permissions, PERMISSION_LOCATION);
@@ -253,7 +256,7 @@ public class DetailOrderActivity extends AppCompatActivity {
                 ListCategoriesActivity.order.setLongitude_order(longitude_order);
                 btn_confirm.setVisibility(View.VISIBLE);
                 txt_per.setVisibility(View.GONE);
-                // Toast.makeText(DetailOrderActivity.this, " ubicacion  " + location.getLatitude() + " , " + location.getLongitude(), Toast.LENGTH_LONG).show();
+               // Toast.makeText(DetailOrderActivity.this, " ubicacion  " + location.getLatitude() + " , " + location.getLongitude(), Toast.LENGTH_LONG).show();
             } else {
                 btn_confirm.setVisibility(View.GONE);
                 txt_per.setVisibility(View.VISIBLE);
